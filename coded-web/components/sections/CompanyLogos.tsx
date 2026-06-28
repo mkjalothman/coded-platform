@@ -13,24 +13,24 @@ const companies = [
 
 export default function CompanyLogos() {
   return (
-    <section className="bg-white py-12 border-y border-coded-border">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <p className="text-center text-xs font-semibold uppercase tracking-[0.2em] text-coded-muted mb-8">
+    <section className="bg-white py-16 border-y border-gray-200/80">
+      <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-16">
+        <p className="text-center text-xs font-semibold uppercase tracking-[0.2em] text-coded-muted mb-10">
           Trusted by leading companies
         </p>
-        <div className="relative overflow-hidden">
-          <div className="flex animate-[scroll_30s_linear_infinite] gap-12 items-center">
-            {[...companies, ...companies].map((name, i) => (
-              <div
-                key={`${name}-${i}`}
-                className="flex-shrink-0 px-6 py-3 rounded-[8px] bg-coded-bg border border-coded-border"
-              >
-                <span className="text-sm font-semibold text-coded-muted whitespace-nowrap">
-                  {name}
-                </span>
-              </div>
-            ))}
-          </div>
+      </div>
+      <div className="overflow-hidden">
+        <div className="flex animate-[scroll_30s_linear_infinite] gap-6 items-center px-6">
+          {[...companies, ...companies].map((name, i) => (
+            <div
+              key={`${name}-${i}`}
+              className="flex-shrink-0 px-8 py-4 rounded-xl bg-gray-50 border border-gray-200"
+            >
+              <span className="text-sm font-semibold text-coded-muted whitespace-nowrap">
+                {name}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
 

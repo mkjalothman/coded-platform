@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Button from "@/components/ui/Button";
 import MobileMenu from "./MobileMenu";
 
 const navLinks = [
@@ -30,33 +29,36 @@ export default function Navbar() {
           scrolled ? "shadow-md" : "shadow-none"
         }`}
       >
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-6 md:px-12">
           <div className="flex h-16 items-center justify-between">
             <Link
               href="/"
-              className="inline-flex items-center border-2 border-coded-navy rounded-[6px] px-3 py-1"
+              className="inline-flex items-center border-2 border-coded-navy rounded-[6px] px-3.5 py-1.5 mr-8"
             >
               <span className="text-lg font-bold tracking-tight text-coded-navy">
                 CODED
               </span>
             </Link>
 
-            <nav className="hidden lg:flex items-center gap-1">
+            <nav className="hidden lg:flex items-center gap-8">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="px-4 py-2 text-sm font-medium text-coded-text hover:text-coded-navy rounded-[8px] transition-colors"
+                  className="text-sm font-medium text-coded-text hover:text-coded-navy transition-colors"
                 >
                   {link.label}
                 </Link>
               ))}
             </nav>
 
-            <div className="hidden lg:flex items-center gap-3">
-              <Button variant="teal" size="sm">
+            <div className="hidden lg:flex items-center">
+              <Link
+                href="/apply"
+                className="inline-flex items-center justify-center px-6 py-2.5 text-sm font-semibold rounded-[8px] bg-coded-teal text-white hover:bg-coded-teal/90 transition-colors"
+              >
                 Apply Now
-              </Button>
+              </Link>
             </div>
 
             <button
