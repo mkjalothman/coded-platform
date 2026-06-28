@@ -1,15 +1,39 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-coded-bg: #0a0a0a;
-  --color-coded-surface: #111111;
-  --color-coded-surface2: #1a1a1a;
-  --color-coded-border: #2a2a2a;
-  --color-coded-white: #ffffff;
-  --color-coded-muted: #888888;
+  --color-coded-bg: #f4f5f7;
+  --color-coded-bg-dark: #0d1436;
+  --color-coded-surface: #ffffff;
+  --color-coded-surface-dark: #111d4a;
+  --color-coded-border: #e5e7eb;
+  --color-coded-border-dark: #1e2d6b;
+
+  --color-coded-text: #0a0f2e;
+  --color-coded-text-light: #ffffff;
+  --color-coded-muted: #6b7280;
+  --color-coded-muted-dark: #8892b0;
+
+  --color-coded-teal: #00b8a9;
+  --color-coded-navy: #1a2570;
+  --color-coded-green: #2d6a4f;
+  --color-coded-purple: #9b59b6;
 
   --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+:root {
+  --font-size-hero: clamp(48px, 7vw, 80px);
+  --font-size-h2: clamp(32px, 4vw, 48px);
+  --font-size-h3: 22px;
+  --font-size-body: 16px;
+  --font-size-small: 14px;
+  --font-weight-black: 800;
+  --font-weight-bold: 700;
+  --font-weight-medium: 500;
+  --line-height-tight: 1.1;
+  --line-height-normal: 1.6;
+  --line-height-relaxed: 1.75;
 }
 
 * {
@@ -20,13 +44,13 @@
 
 body {
   background-color: var(--color-coded-bg);
-  color: var(--color-coded-white);
+  color: var(--color-coded-text);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 ::selection {
-  background-color: #ffffff;
-  color: #0a0a0a;
+  background-color: var(--color-coded-navy);
+  color: #ffffff;
 }
