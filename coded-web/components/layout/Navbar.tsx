@@ -1,0 +1,75 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import Button from "@/components/ui/Button";
+import MobileMenu from "./MobileMenu";
+
+const navLinks = [
+  { label: "Bootcamps", href: "/bootcamps" },
+  { label: "Companies", href: "/companies" },
+  { label: "Kids & Youth", href: "/youth" },
+  { label: "Community", href: "/community" },
+  { label: "About", href: "/about" },
+];
+
+export default function Navbar() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  return (
+    <>
+      <header className="sticky top-0 z-40 w-full border-b border-coded-border bg-coded-bg/80 backdrop-blur-xl">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex h-16 items-center justify-between">
+            <Link href="/" className="flex items-center">
+              <span className="text-xl font-bold tracking-tight text-coded-white">
+                CODED
+              </span>
+            </Link>
+
+            <nav className="hidden lg:flex items-center gap-1">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="px-4 py-2 text-sm text-coded-muted hover:text-coded-white rounded-[8px] transition-colors"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+
+            <div className="hidden lg:flex items-center gap-3">
+              <Button variant="primary" size="sm">
+                Apply Now
+              </Button>
+            </div>
+
+            <button
+              className="lg:hidden p-2 text-coded-muted hover:text-coded-white"
+              onClick={() => setMobileOpen(true)}
+              aria-label="Open menu"
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <MobileMenu isOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
+    </>
+  );
+}
