@@ -28,12 +28,14 @@ export default function Home() {
         backgroundColor: '#0d1436',
         minHeight: '100vh',
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
         backgroundImage: 'radial-gradient(ellipse 70% 50% at 50% 50%, #1a3a8a33 0%, transparent 70%)',
-        paddingTop: '64px'
+        paddingTop: '64px',
+        paddingBottom: '64px'
       }}>
-        <div className="text-center px-8 max-w-4xl mx-auto">
+        <div style={{textAlign: 'center', padding: '0 32px', maxWidth: '800px', margin: '0 auto', width: '100%'}}>
           <p style={{color: '#00b8a9', fontSize: '12px', letterSpacing: '0.15em'}} className="uppercase font-semibold mb-6">
             1st Coding Academy in the Arab World — Est 2015
           </p>
@@ -41,7 +43,7 @@ export default function Home() {
             Build Real Tech Skills<br/>
             <span style={{color: '#00b8a9'}}>Not Just Knowledge</span>
           </h1>
-          <p style={{fontSize: '18px', color: '#8892b0', lineHeight: '1.7'}} className="mb-10 max-w-2xl mx-auto">
+          <p style={{fontSize: '18px', color: '#8892b0', lineHeight: '1.7', margin: '0 auto', maxWidth: '600px'}} className="mb-10">
             CODED programs are hands-on from day one — projects, coaching, and real standards.
             Join as an adult, teen, or kid. Leave with work you can show.
           </p>
@@ -57,7 +59,7 @@ export default function Home() {
       </section>
 
       {/* BOOTCAMPS */}
-      <section style={{backgroundColor: '#f4f5f7', padding: '96px 0'}}>
+      <section style={{backgroundColor: '#f4f5f7', padding: '120px 0 96px'}}>
         <div className="max-w-6xl mx-auto px-8">
           <h2 style={{fontSize: '42px', fontWeight: '800', color: '#0a0f2e', textAlign: 'center', marginBottom: '16px'}}>
             Discover Your Perfect Bootcamp Match Today
@@ -165,6 +167,49 @@ export default function Home() {
         </div>
       </section>
 
+      {/* TESTIMONIALS */}
+      <section style={{backgroundColor: '#0d1436', padding: '96px 0'}}>
+        <div style={{maxWidth: '1152px', margin: '0 auto', padding: '0 32px'}}>
+          <p style={{color: '#00b8a9', fontSize: '12px', letterSpacing: '0.15em', fontWeight: '600', textAlign: 'center', marginBottom: '16px'}} className="uppercase">TESTIMONIALS</p>
+          <h2 style={{fontSize: '42px', fontWeight: '800', color: 'white', textAlign: 'center', marginBottom: '64px'}}>
+            What our graduates say
+          </h2>
+          <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px'}}>
+            {[
+              {name: 'Fatima Al-Rashidi', track: 'AI App Developer · Cohort 9', quote: 'I joined as a marketing manager with zero coding. After 12 weeks I shipped a working app and got promoted to lead our digital transformation team.', initials: 'FA'},
+              {name: 'Khalid Al-Mutairi', track: 'Cybersecurity · Cohort 6', quote: 'CODED is nothing like a typical course. The coaches push you hard. I left with a capstone project that got me my first dev job within 2 months.', initials: 'KM'},
+              {name: 'Nour Al-Sabah', track: 'Agentic AI · Cohort 1', quote: 'The Agentic AI track was exactly what I needed. I am now building AI workflows at my company that save us 20+ hours every single week.', initials: 'NS'},
+            ].map(t => (
+              <div key={t.name} style={{
+                backgroundColor: '#111d4a',
+                borderRadius: '20px',
+                padding: '32px',
+                border: '1px solid #1e2d6b'
+              }}>
+                <p style={{color: '#cbd5e1', fontSize: '15px', lineHeight: '1.7', marginBottom: '24px', fontStyle: 'italic'}}>
+                  &ldquo;{t.quote}&rdquo;
+                </p>
+                <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
+                  <div style={{
+                    width: '40px', height: '40px', borderRadius: '50%',
+                    backgroundColor: '#00b8a9', display: 'flex',
+                    alignItems: 'center', justifyContent: 'center',
+                    fontWeight: '700', color: 'white', fontSize: '14px',
+                    flexShrink: 0
+                  }}>
+                    {t.initials}
+                  </div>
+                  <div>
+                    <div style={{color: 'white', fontWeight: '700', fontSize: '14px'}}>{t.name}</div>
+                    <div style={{color: '#8892b0', fontSize: '12px'}}>{t.track}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* COMPANY LOGOS */}
       <section style={{backgroundColor: '#f4f5f7', padding: '64px 0'}}>
         <div className="max-w-6xl mx-auto px-8 text-center">
@@ -192,6 +237,41 @@ export default function Home() {
               <div key={s.label}>
                 <div style={{fontSize: '64px', fontWeight: '800', color: '#00b8a9', lineHeight: '1'}}>{s.num}</div>
                 <div style={{color: 'white', fontSize: '16px', marginTop: '12px'}}>{s.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* HOW IT WORKS */}
+      <section style={{backgroundColor: '#f4f5f7', padding: '96px 0'}}>
+        <div style={{maxWidth: '1152px', margin: '0 auto', padding: '0 32px'}}>
+          <p style={{color: '#00b8a9', fontSize: '12px', letterSpacing: '0.15em', fontWeight: '600', textAlign: 'center', marginBottom: '16px'}} className="uppercase">HOW IT WORKS</p>
+          <h2 style={{fontSize: '42px', fontWeight: '800', color: '#0a0f2e', textAlign: 'center', marginBottom: '64px'}}>
+            How CODED actually teaches
+          </h2>
+          <div style={{display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px'}}>
+            {[
+              {num: '01', title: 'Learn by building', desc: 'Every session ends with something you made. Projects are portfolio pieces you would show an employer.'},
+              {num: '02', title: 'Get real feedback', desc: 'Instructors review your work and tell you exactly what to fix. Less guessing, more progress every session.'},
+              {num: '03', title: 'Learn with a cohort', desc: 'You collaborate, present, and give feedback like a real team. Your peers become your professional network.'},
+              {num: '04', title: 'Ship a real product', desc: 'Your final project is a full deployable product built to industry standards. Something you can demo and share.'},
+            ].map(h => (
+              <div key={h.num} style={{
+                backgroundColor: 'white',
+                borderRadius: '20px',
+                padding: '32px',
+                boxShadow: '0 4px 24px rgba(0,0,0,0.06)'
+              }}>
+                <div style={{color: '#00b8a9', fontSize: '13px', fontWeight: '700', marginBottom: '16px', letterSpacing: '0.05em'}}>
+                  {h.num}
+                </div>
+                <h3 style={{fontSize: '18px', fontWeight: '800', color: '#0a0f2e', marginBottom: '12px'}}>
+                  {h.title}
+                </h3>
+                <p style={{color: '#6b7280', fontSize: '14px', lineHeight: '1.6'}}>
+                  {h.desc}
+                </p>
               </div>
             ))}
           </div>
