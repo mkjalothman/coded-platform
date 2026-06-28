@@ -58,15 +58,23 @@ export async function POST(req: Request) {
 
     const anthropic = new Anthropic({ apiKey });
 
-    const stream = anthropic.messages.stream({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 512,
-      system: SYSTEM_PROMPT,
-      messages: messages.map((m: { role: string; content: string }) => ({
-        role: m.role as "user" | "assistant",
-        content: m.content,
-      })),
-    });
+    let stream;
+    try {
+      stream = anthropic.messages.stream({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 512,
+        system: SYSTEM_PROMPT,
+        messages: messages.map((m: { role: string; content: string }) => ({
+          role: m.role as "user" | "assistant",
+          content: m.content,
+        })),
+      });
+    } catch {
+      return Response.json(
+        { error: "Sorry, the assistant is temporarily unavailable. Please try again later." },
+        { status: 503 }
+      );
+    }
 
     const encoder = new TextEncoder();
     const readable = new ReadableStream({
@@ -86,11 +94,11 @@ export async function POST(req: Request) {
           }
           controller.enqueue(encoder.encode("data: [DONE]\n\n"));
           controller.close();
-        } catch (streamErr) {
-          const msg =
-            streamErr instanceof Error ? streamErr.message : "Stream error";
+        } catch {
           controller.enqueue(
-            encoder.encode(`data: ${JSON.stringify({ text: msg })}\n\n`)
+            encoder.encode(
+              `data: ${JSON.stringify({ text: "Sorry, I'm having trouble responding right now. Please try again in a moment." })}\n\n`
+            )
           );
           controller.enqueue(encoder.encode("data: [DONE]\n\n"));
           controller.close();
