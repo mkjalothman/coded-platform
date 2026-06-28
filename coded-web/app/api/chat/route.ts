@@ -44,51 +44,69 @@ RULES:
 - Use short paragraphs, not bullet lists (unless comparing programs)
 - End with a clear next step: "Want me to tell you more about [program]?" or "You can apply at coded.kw/apply"`;
 
-const anthropic = new Anthropic();
-
 export async function POST(req: Request) {
-  const { messages } = await req.json();
+  try {
+    const { messages } = await req.json();
 
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return Response.json(
-      { error: "ANTHROPIC_API_KEY is not configured" },
-      { status: 500 }
-    );
-  }
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) {
+      return Response.json(
+        { error: "ANTHROPIC_API_KEY is not configured" },
+        { status: 500 }
+      );
+    }
 
-  const stream = anthropic.messages.stream({
-    model: "claude-sonnet-4-20250514",
-    max_tokens: 512,
-    system: SYSTEM_PROMPT,
-    messages: messages.map((m: { role: string; content: string }) => ({
-      role: m.role as "user" | "assistant",
-      content: m.content,
-    })),
-  });
+    const anthropic = new Anthropic({ apiKey });
 
-  const encoder = new TextEncoder();
-  const readable = new ReadableStream({
-    async start(controller) {
-      for await (const event of stream) {
-        if (
-          event.type === "content_block_delta" &&
-          event.delta.type === "text_delta"
-        ) {
+    const stream = anthropic.messages.stream({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 512,
+      system: SYSTEM_PROMPT,
+      messages: messages.map((m: { role: string; content: string }) => ({
+        role: m.role as "user" | "assistant",
+        content: m.content,
+      })),
+    });
+
+    const encoder = new TextEncoder();
+    const readable = new ReadableStream({
+      async start(controller) {
+        try {
+          for await (const event of stream) {
+            if (
+              event.type === "content_block_delta" &&
+              event.delta.type === "text_delta"
+            ) {
+              controller.enqueue(
+                encoder.encode(
+                  `data: ${JSON.stringify({ text: event.delta.text })}\n\n`
+                )
+              );
+            }
+          }
+          controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+          controller.close();
+        } catch (streamErr) {
+          const msg =
+            streamErr instanceof Error ? streamErr.message : "Stream error";
           controller.enqueue(
-            encoder.encode(`data: ${JSON.stringify({ text: event.delta.text })}\n\n`)
+            encoder.encode(`data: ${JSON.stringify({ text: msg })}\n\n`)
           );
+          controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+          controller.close();
         }
-      }
-      controller.enqueue(encoder.encode("data: [DONE]\n\n"));
-      controller.close();
-    },
-  });
+      },
+    });
 
-  return new Response(readable, {
-    headers: {
-      "Content-Type": "text/event-stream",
-      "Cache-Control": "no-cache",
-      Connection: "keep-alive",
-    },
-  });
+    return new Response(readable, {
+      headers: {
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        Connection: "keep-alive",
+      },
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Unknown error";
+    return Response.json({ error: message }, { status: 500 });
+  }
 }
