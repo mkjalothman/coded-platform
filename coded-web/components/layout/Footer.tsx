@@ -4,10 +4,10 @@ const footerSections = [
   {
     title: "Bootcamps",
     links: [
-      { label: "Web Development", href: "/bootcamps/web-development" },
-      { label: "Data Science & AI", href: "/bootcamps/data-science" },
       { label: "Cybersecurity", href: "/bootcamps/cybersecurity" },
       { label: "AI App Developer", href: "/bootcamps/ai-app-developer" },
+      { label: "Agentic AI", href: "/bootcamps/agentic-ai" },
+      { label: "AI & Data Science", href: "/bootcamps/data-science" },
     ],
   },
   {
@@ -66,17 +66,20 @@ const socialLinks = [
 
 export default function Footer() {
   return (
-    <footer className="border-t border-coded-border bg-coded-bg">
+    <footer className="bg-coded-bg-dark text-coded-text-light">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="py-12 lg:py-16">
           <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
             <div className="col-span-2 md:col-span-1">
-              <Link href="/" className="inline-flex items-center">
-                <span className="text-xl font-bold tracking-tight text-coded-white">
+              <Link
+                href="/"
+                className="inline-flex items-center border-2 border-white rounded-[6px] px-3 py-1"
+              >
+                <span className="text-lg font-bold tracking-tight text-white">
                   CODED
                 </span>
               </Link>
-              <p className="mt-4 text-xs font-semibold uppercase tracking-[0.2em] text-coded-muted max-w-xs leading-relaxed">
+              <p className="mt-4 text-xs font-semibold uppercase tracking-[0.2em] text-coded-muted-dark max-w-xs leading-relaxed">
                 The go-to place for AI &amp; tech education
               </p>
               <div className="mt-6 flex items-center gap-4">
@@ -86,7 +89,7 @@ export default function Footer() {
                     href={social.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-coded-muted hover:text-coded-white transition-colors"
+                    className="text-coded-muted-dark hover:text-white transition-colors"
                     aria-label={social.label}
                   >
                     {social.icon}
@@ -97,7 +100,7 @@ export default function Footer() {
 
             {footerSections.map((section) => (
               <div key={section.title}>
-                <h3 className="text-sm font-semibold text-coded-white">
+                <h3 className="text-sm font-semibold text-white">
                   {section.title}
                 </h3>
                 <ul className="mt-4 space-y-3">
@@ -105,7 +108,7 @@ export default function Footer() {
                     <li key={link.href}>
                       <Link
                         href={link.href}
-                        className="text-sm text-coded-muted hover:text-coded-white transition-colors"
+                        className="text-sm text-coded-muted-dark hover:text-white transition-colors"
                       >
                         {link.label}
                       </Link>
@@ -117,19 +120,25 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-coded-border py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex flex-col sm:flex-row items-center gap-4 text-xs text-coded-muted">
+        <div className="border-t border-coded-border-dark py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex flex-col sm:flex-row items-center gap-4 text-xs text-coded-muted-dark">
             <span>2026 &copy; CODED</span>
             <span className="hidden sm:inline">|</span>
-            <a href="tel:+96560791018" className="hover:text-coded-white transition-colors">
+            <a
+              href="tel:+96560791018"
+              className="hover:text-white transition-colors"
+            >
               +965 6079 1018
             </a>
             <span className="hidden sm:inline">|</span>
-            <a href="mailto:hello@joincoded.com" className="hover:text-coded-white transition-colors">
+            <a
+              href="mailto:hello@joincoded.com"
+              className="hover:text-white transition-colors"
+            >
               hello@joincoded.com
             </a>
           </div>
-          <div className="text-xs text-coded-muted">
+          <div className="text-xs text-coded-muted-dark">
             Kuwait Free Trade Zone
           </div>
         </div>

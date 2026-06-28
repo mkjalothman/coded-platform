@@ -21,12 +21,12 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
 
   return (
     <div className="fixed inset-0 z-50 lg:hidden">
-      <div className="fixed inset-0 bg-black/60" onClick={onClose} />
-      <div className="fixed inset-y-0 right-0 w-full max-w-sm bg-coded-bg border-l border-coded-border p-6 flex flex-col">
+      <div className="fixed inset-0 bg-black/40" onClick={onClose} />
+      <div className="fixed inset-y-0 right-0 w-full max-w-sm bg-white border-l border-coded-border p-6 flex flex-col">
         <div className="flex justify-end mb-8">
           <button
             onClick={onClose}
-            className="text-coded-muted hover:text-coded-white p-2"
+            className="text-coded-muted hover:text-coded-text p-2"
             aria-label="Close menu"
           >
             <svg
@@ -50,14 +50,14 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
               key={link.href}
               href={link.href}
               onClick={onClose}
-              className="text-coded-muted hover:text-coded-white px-4 py-3 rounded-[8px] hover:bg-coded-surface transition-colors text-lg"
+              className="text-coded-text hover:text-coded-navy px-4 py-3 rounded-[8px] hover:bg-coded-bg transition-colors text-lg font-medium"
             >
               {link.label}
             </Link>
           ))}
         </nav>
         <div className="mt-auto pt-8">
-          <Button variant="primary" size="lg" className="w-full">
+          <Button variant="teal" size="lg" className="w-full">
             Apply Now
           </Button>
         </div>

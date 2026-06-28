@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
 import MobileMenu from "./MobileMenu";
@@ -15,14 +15,28 @@ const navLinks = [
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <>
-      <header className="sticky top-0 z-40 w-full border-b border-coded-border bg-coded-bg/80 backdrop-blur-xl">
+      <header
+        className={`sticky top-0 z-40 w-full bg-white transition-shadow duration-200 ${
+          scrolled ? "shadow-md" : "shadow-none"
+        }`}
+      >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
-            <Link href="/" className="flex items-center">
-              <span className="text-xl font-bold tracking-tight text-coded-white">
+            <Link
+              href="/"
+              className="inline-flex items-center border-2 border-coded-navy rounded-[6px] px-3 py-1"
+            >
+              <span className="text-lg font-bold tracking-tight text-coded-navy">
                 CODED
               </span>
             </Link>
@@ -32,7 +46,7 @@ export default function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="px-4 py-2 text-sm text-coded-muted hover:text-coded-white rounded-[8px] transition-colors"
+                  className="px-4 py-2 text-sm font-medium text-coded-text hover:text-coded-navy rounded-[8px] transition-colors"
                 >
                   {link.label}
                 </Link>
@@ -40,13 +54,13 @@ export default function Navbar() {
             </nav>
 
             <div className="hidden lg:flex items-center gap-3">
-              <Button variant="primary" size="sm">
+              <Button variant="teal" size="sm">
                 Apply Now
               </Button>
             </div>
 
             <button
-              className="lg:hidden p-2 text-coded-muted hover:text-coded-white"
+              className="lg:hidden p-2 text-coded-text hover:text-coded-navy"
               onClick={() => setMobileOpen(true)}
               aria-label="Open menu"
             >

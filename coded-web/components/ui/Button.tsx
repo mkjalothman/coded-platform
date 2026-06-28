@@ -1,6 +1,6 @@
 import { ButtonHTMLAttributes, forwardRef } from "react";
 
-type ButtonVariant = "primary" | "secondary" | "ghost" | "outline";
+type ButtonVariant = "primary" | "secondary" | "ghost" | "outline" | "teal" | "navy" | "green" | "purple";
 type ButtonSize = "sm" | "md" | "lg";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -9,11 +9,14 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantClasses: Record<ButtonVariant, string> = {
-  primary: "bg-coded-white text-coded-bg hover:bg-coded-white/90",
-  secondary:
-    "bg-coded-surface text-coded-white hover:bg-coded-surface2 border border-coded-border",
-  ghost: "text-coded-muted hover:text-coded-white hover:bg-coded-surface",
-  outline: "border border-coded-border text-coded-white hover:bg-coded-surface",
+  primary: "bg-coded-navy text-white hover:bg-coded-navy/90",
+  secondary: "bg-coded-surface text-coded-text hover:bg-coded-bg border border-coded-border",
+  ghost: "text-coded-muted hover:text-coded-text hover:bg-coded-bg",
+  outline: "border border-coded-border text-coded-text hover:bg-coded-bg",
+  teal: "bg-coded-teal text-white hover:bg-coded-teal/90",
+  navy: "bg-coded-navy text-white hover:bg-coded-navy/90",
+  green: "bg-coded-green text-white hover:bg-coded-green/90",
+  purple: "bg-coded-purple text-white hover:bg-coded-purple/90",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
