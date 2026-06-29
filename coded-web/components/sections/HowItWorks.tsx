@@ -10,7 +10,7 @@ import type { Step } from "@/data/programs";
 
 export default function HowItWorks({ steps }: { steps: Step[] }) {
   return (
-    <Container bg={colors.surface.light}>
+    <Container id="how-it-works" bg={colors.surface.light}>
       <SectionHeader eyebrow="HOW IT WORKS" heading="How CODED actually teaches" />
       <StaggerGrid style={{
         display: "grid",

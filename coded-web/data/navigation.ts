@@ -1,5 +1,3 @@
-import type { ReactNode } from "react";
-
 export interface NavLink {
   label: string;
   href: string;
@@ -7,10 +5,9 @@ export interface NavLink {
 
 export const navLinks: NavLink[] = [
   { label: "Bootcamps", href: "#bootcamps" },
-  { label: "Companies", href: "#companies" },
-  { label: "Kids & Youth", href: "#audience" },
-  { label: "Community", href: "#community" },
-  { label: "About", href: "#about" },
+  { label: "How It Works", href: "#how-it-works" },
+  { label: "Testimonials", href: "#testimonials" },
+  { label: "FAQ", href: "#faq" },
 ];
 
 export interface FooterSection {
@@ -22,19 +19,19 @@ export const footerSections: FooterSection[] = [
   {
     title: "Programs",
     links: [
-      { label: "Cybersecurity", href: "#" },
-      { label: "AI App Developer", href: "#" },
-      { label: "Agentic AI", href: "#" },
-      { label: "AI & Data Science", href: "#" },
+      { label: "Cybersecurity", href: "#bootcamps" },
+      { label: "AI App Developer", href: "#bootcamps" },
+      { label: "Agentic AI", href: "#bootcamps" },
+      { label: "AI & Data Science", href: "#bootcamps" },
     ],
   },
   {
     title: "Company",
     links: [
-      { label: "For Companies", href: "#" },
-      { label: "Kids & Youth", href: "#" },
-      { label: "Community", href: "#" },
-      { label: "About Us", href: "#" },
+      { label: "For Companies", href: "#audience" },
+      { label: "Kids & Youth", href: "#audience" },
+      { label: "How It Works", href: "#how-it-works" },
+      { label: "FAQ", href: "#faq" },
     ],
   },
   {
@@ -42,7 +39,7 @@ export const footerSections: FooterSection[] = [
     links: [
       { label: "hello@joincoded.com", href: "mailto:hello@joincoded.com" },
       { label: "+965 6079 1018", href: "tel:+96560791018" },
-      { label: "Kuwait Free Trade Zone", href: "#" },
+      { label: "Kuwait Free Trade Zone", href: "https://maps.google.com/?q=Kuwait+Free+Trade+Zone" },
       { label: "coded.kw", href: "https://coded.kw" },
     ],
   },

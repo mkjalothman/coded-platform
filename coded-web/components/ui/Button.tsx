@@ -13,7 +13,7 @@ interface ButtonProps {
   variant?: ButtonVariant;
   trackColor?: string;
   href?: string;
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => void;
   style?: React.CSSProperties;
   className?: string;
 }
@@ -89,7 +89,7 @@ export default function Button({
 
   if (href) {
     return (
-      <motion.a href={href} style={combined} className={className} {...hoverPreset}>
+      <motion.a href={href} onClick={onClick} style={combined} className={className} {...hoverPreset}>
         {children}
       </motion.a>
     );

@@ -6,6 +6,15 @@ import { spacing, radius } from "@/design-system/spacing";
 import { cssTransition } from "@/design-system/motion";
 import { footerSections, socialLinks } from "@/data/navigation";
 
+function smoothScroll(e: React.MouseEvent<HTMLAnchorElement>, href: string) {
+  if (href.startsWith("#")) {
+    e.preventDefault();
+    const id = href.replace("#", "");
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
 function SocialIcon({ href, label, iconPath, fill }: {
   href: string;
   label: string;
@@ -112,6 +121,9 @@ export default function Footer() {
                     <li key={link.label}>
                       <a
                         href={link.href}
+                        onClick={(e) => smoothScroll(e, link.href)}
+                        target={link.href.startsWith("http") || link.href.startsWith("mailto:") || link.href.startsWith("tel:") ? "_blank" : undefined}
+                        rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
                         style={{
                           color: colors.text.bodyDark,
                           fontSize: fontSize.small,

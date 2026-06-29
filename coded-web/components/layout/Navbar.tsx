@@ -1,12 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import MobileMenu from "./MobileMenu";
 import Button from "@/components/ui/Button";
 import { colors, shadows } from "@/design-system";
 import { spacing } from "@/design-system/spacing";
 import { navbar, cssTransition } from "@/design-system/motion";
 import { navLinks } from "@/data/navigation";
+
+function smoothScroll(href: string) {
+  const id = href.replace("#", "");
+  const el = document.getElementById(id);
+  if (el) {
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -16,6 +24,13 @@ export default function Navbar() {
     const onScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const handleNavClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (href.startsWith("#")) {
+      e.preventDefault();
+      smoothScroll(href);
+    }
   }, []);
 
   return (
@@ -52,11 +67,15 @@ export default function Navbar() {
             <span style={{ color: "white", fontWeight: 700, fontSize: "18px", letterSpacing: "-0.01em" }}>CODED</span>
           </a>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "32px" }} className="hidden md:flex">
+          <div className="nav-desktop-links" style={{
+            alignItems: "center",
+            gap: "32px",
+          }}>
             {navLinks.map(link => (
               <a
                 key={link.href}
                 href={link.href}
+                onClick={(e) => handleNavClick(e, link.href)}
                 style={{
                   color: colors.text.navDefault,
                   fontSize: "14px",
@@ -73,16 +92,21 @@ export default function Navbar() {
             ))}
           </div>
 
-          <Button href="#apply" style={{
-            padding: "10px 24px",
-            fontSize: "14px",
-          }} className="hidden md:inline-flex">
+          <Button
+            href="#apply"
+            onClick={(e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => handleNavClick(e as React.MouseEvent<HTMLAnchorElement>, "#apply")}
+            style={{
+              padding: "10px 24px",
+              fontSize: "14px",
+            }}
+            className="nav-desktop-cta"
+          >
             Apply Now
           </Button>
 
           <button
             onClick={() => setMobileOpen(true)}
-            className="md:hidden"
+            className="nav-mobile-toggle"
             style={{
               background: "none",
               border: "none",
@@ -102,6 +126,18 @@ export default function Navbar() {
       </nav>
 
       <MobileMenu isOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
+
+      <style>{`
+        .nav-desktop-links { display: none; }
+        .nav-desktop-cta { display: none !important; }
+        .nav-mobile-toggle { display: block; }
+
+        @media (min-width: 768px) {
+          .nav-desktop-links { display: flex; }
+          .nav-desktop-cta { display: inline-flex !important; }
+          .nav-mobile-toggle { display: none; }
+        }
+      `}</style>
     </>
   );
 }
