@@ -85,8 +85,12 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                   key={link.href}
                   href={link.href}
                   onClick={(e) => {
-                    e.preventDefault();
-                    smoothScrollAndClose(link.href, onClose);
+                    if (link.href.startsWith("#")) {
+                      e.preventDefault();
+                      smoothScrollAndClose(link.href, onClose);
+                    } else {
+                      onClose();
+                    }
                   }}
                   style={{
                     color: "white",
