@@ -10,6 +10,15 @@ export const spacing = {
   headingToContent: "56px",
   ctaTopMargin: "40px",
   navbarHeight: "64px",
+  gap: {
+    xs: "8px",
+    sm: "12px",
+    md: "16px",
+    lg: "24px",
+    xl: "32px",
+    xxl: "40px",
+    section: "48px",
+  },
 } as const;
 
 export const containerStyle: React.CSSProperties = {

@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
+import { reveal } from "@/design-system/motion";
 
 interface RevealProps {
   children: React.ReactNode;
@@ -21,7 +22,7 @@ export default function Reveal({
   once = true,
 }: RevealProps) {
   const ref = useRef(null);
-  const inView = useInView(ref, { once, margin: "-60px" });
+  const inView = useInView(ref, { once, margin: reveal.viewMargin });
 
   return (
     <motion.div
@@ -29,7 +30,7 @@ export default function Reveal({
       className={className}
       initial={{ opacity: 0, y }}
       animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y }}
-      transition={{ duration, delay, ease: [0.25, 0.1, 0.25, 1] }}
+      transition={reveal.transition(duration, delay)}
     >
       {children}
     </motion.div>

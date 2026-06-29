@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import Button from "@/components/ui/Button";
 import { colors, gradients, heroStagger } from "@/design-system";
 import { fontSize, fontWeight, lineHeight } from "@/design-system/typography";
-import { containerStyle } from "@/design-system/spacing";
+import { containerStyle, spacing } from "@/design-system/spacing";
 
 export default function HeroSection() {
   const fade = (delay: number) => ({
@@ -22,8 +22,8 @@ export default function HeroSection() {
       alignItems: "center",
       justifyContent: "center",
       backgroundImage: gradients.heroGlow,
-      paddingTop: "64px",
-      paddingBottom: "64px",
+      paddingTop: spacing.navbarHeight,
+      paddingBottom: spacing.navbarHeight,
     }}>
       <div style={{ ...containerStyle, textAlign: "center" as const, width: "100%" }}>
         <motion.p {...fade(heroStagger.delays[0])} style={{
@@ -32,7 +32,7 @@ export default function HeroSection() {
           letterSpacing: "0.15em",
           fontWeight: fontWeight.semibold,
           textTransform: "uppercase" as const,
-          marginBottom: "24px",
+          marginBottom: spacing.gap.lg,
         }}>
           1st Coding Academy in the Arab World — Est 2015
         </motion.p>
@@ -45,8 +45,8 @@ export default function HeroSection() {
             fontSize: fontSize.hero,
             lineHeight: lineHeight.tight,
             fontWeight: fontWeight.black,
-            color: "white",
-            marginBottom: "24px",
+            color: colors.text.headingLight,
+            marginBottom: spacing.gap.lg,
             maxWidth: "800px",
             marginLeft: "auto",
             marginRight: "auto",
@@ -57,12 +57,12 @@ export default function HeroSection() {
         </motion.h1>
 
         <motion.p {...fade(heroStagger.delays[2])} style={{
-          fontSize: "18px",
+          fontSize: fontSize.subtitle,
           color: colors.text.bodyDark,
           lineHeight: lineHeight.relaxed,
           margin: "0 auto",
           maxWidth: "600px",
-          marginBottom: "40px",
+          marginBottom: spacing.ctaTopMargin,
         }}>
           CODED programs are hands-on from day one — projects, coaching, and real standards.
           Join as an adult, teen, or kid. Leave with work you can show.
@@ -72,7 +72,7 @@ export default function HeroSection() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          gap: "16px",
+          gap: spacing.gap.md,
           flexWrap: "wrap" as const,
         }}>
           <Button href="#bootcamps">Explore Bootcamps <span>→</span></Button>

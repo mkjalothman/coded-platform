@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect } from "react";
 import { colors, shadows } from "@/design-system";
+import { fontSize, fontWeight } from "@/design-system/typography";
+import { radius, spacing } from "@/design-system/spacing";
 import { streamChat, type ChatMessage } from "@/lib/ai/chat";
 import { chatStarters } from "@/data/navigation";
 
@@ -58,8 +60,8 @@ export default function ChatWidget() {
         aria-label={open ? "Close chat" : "Open chat"}
         style={{
           position: "fixed",
-          bottom: "24px",
-          right: "24px",
+          bottom: spacing.gap.lg,
+          right: spacing.gap.lg,
           zIndex: 9999,
           width: "60px",
           height: "60px",
@@ -75,7 +77,7 @@ export default function ChatWidget() {
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.transform = "scale(1.08)";
-          e.currentTarget.style.boxShadow = "0 6px 28px rgba(0,184,169,0.5)";
+          e.currentTarget.style.boxShadow = shadows.chatFloatHover;
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.transform = "scale(1)";
@@ -98,7 +100,7 @@ export default function ChatWidget() {
         <div style={{
           position: "fixed",
           bottom: "100px",
-          right: "24px",
+          right: spacing.gap.lg,
           zIndex: 9998,
           width: "min(420px, calc(100vw - 48px))",
           height: "min(600px, calc(100vh - 140px))",
@@ -111,10 +113,10 @@ export default function ChatWidget() {
         }}>
           <div style={{
             backgroundColor: colors.surface.dark,
-            padding: "20px 24px",
+            padding: `20px ${spacing.gap.lg}`,
             borderBottom: `1px solid ${colors.border.dark}`,
           }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: spacing.gap.sm }}>
               <div style={{
                 width: "36px",
                 height: "36px",
@@ -130,8 +132,8 @@ export default function ChatWidget() {
                 </svg>
               </div>
               <div>
-                <div style={{ color: "white", fontWeight: 700, fontSize: "15px" }}>CODED Assistant</div>
-                <div style={{ color: colors.text.bodyDark, fontSize: "12px" }}>Find your perfect program</div>
+                <div style={{ color: colors.text.headingLight, fontWeight: fontWeight.bold, fontSize: fontSize.nav }}>CODED Assistant</div>
+                <div style={{ color: colors.text.bodyDark, fontSize: fontSize.caption }}>Find your perfect program</div>
               </div>
             </div>
           </div>
@@ -143,26 +145,26 @@ export default function ChatWidget() {
             backgroundColor: colors.brand.navy,
             display: "flex",
             flexDirection: "column",
-            gap: "16px",
+            gap: spacing.gap.md,
           }}>
             {messages.length === 0 && (
               <div>
                 <div style={{
                   backgroundColor: colors.surface.darkCard,
-                  borderRadius: "16px",
+                  borderRadius: radius.card,
                   borderTopLeftRadius: "4px",
-                  padding: "16px",
-                  color: "#e2e8f0",
-                  fontSize: "14px",
+                  padding: spacing.gap.md,
+                  color: colors.text.bodyChat,
+                  fontSize: fontSize.small,
                   lineHeight: "1.6",
                   border: `1px solid ${colors.border.dark}`,
-                  marginBottom: "16px",
+                  marginBottom: spacing.gap.md,
                 }}>
                   Hey! 👋 I&apos;m CODED&apos;s AI assistant. I can help you find the right
                   program — whether it&apos;s for you, your kid, or your team. What brings
                   you here?
                 </div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: spacing.gap.xs }}>
                   {chatStarters.map((s) => (
                     <button
                       key={s}
@@ -170,11 +172,11 @@ export default function ChatWidget() {
                       style={{
                         backgroundColor: "transparent",
                         border: `1px solid ${colors.border.dark}`,
-                        borderRadius: "999px",
-                        padding: "8px 16px",
+                        borderRadius: radius.pill,
+                        padding: `${spacing.gap.xs} ${spacing.gap.md}`,
                         color: colors.brand.teal,
-                        fontSize: "13px",
-                        fontWeight: 600,
+                        fontSize: fontSize.chip,
+                        fontWeight: fontWeight.semibold,
                         cursor: "pointer",
                         transition: "all 0.15s",
                       }}
@@ -201,14 +203,14 @@ export default function ChatWidget() {
               }}>
                 <div style={{
                   maxWidth: "85%",
-                  padding: "12px 16px",
-                  borderRadius: "16px",
-                  fontSize: "14px",
+                  padding: `${spacing.gap.sm} ${spacing.gap.md}`,
+                  borderRadius: radius.card,
+                  fontSize: fontSize.small,
                   lineHeight: "1.6",
                   whiteSpace: "pre-wrap",
                   ...(msg.role === "user"
-                    ? { backgroundColor: colors.brand.teal, color: "white", borderBottomRightRadius: "4px" }
-                    : { backgroundColor: colors.surface.darkCard, color: "#e2e8f0", borderTopLeftRadius: "4px", border: `1px solid ${colors.border.dark}` }),
+                    ? { backgroundColor: colors.brand.teal, color: colors.text.headingLight, borderBottomRightRadius: "4px" }
+                    : { backgroundColor: colors.surface.darkCard, color: colors.text.bodyChat, borderTopLeftRadius: "4px", border: `1px solid ${colors.border.dark}` }),
                 }}>
                   {msg.content}
                   {streaming && i === messages.length - 1 && msg.role === "assistant" && (
@@ -229,12 +231,12 @@ export default function ChatWidget() {
 
           <div style={{
             backgroundColor: colors.surface.dark,
-            padding: "16px 20px",
+            padding: `${spacing.gap.md} 20px`,
             borderTop: `1px solid ${colors.border.dark}`,
           }}>
             <form
               onSubmit={(e) => { e.preventDefault(); sendMessage(input); }}
-              style={{ display: "flex", gap: "8px" }}
+              style={{ display: "flex", gap: spacing.gap.xs }}
             >
               <input
                 ref={inputRef}
@@ -247,10 +249,10 @@ export default function ChatWidget() {
                   flex: 1,
                   backgroundColor: colors.surface.darkCard,
                   border: `1px solid ${colors.border.dark}`,
-                  borderRadius: "12px",
-                  padding: "12px 16px",
-                  color: "white",
-                  fontSize: "14px",
+                  borderRadius: radius.input,
+                  padding: `${spacing.gap.sm} ${spacing.gap.md}`,
+                  color: colors.text.headingLight,
+                  fontSize: fontSize.small,
                   outline: "none",
                 }}
               />
@@ -260,7 +262,7 @@ export default function ChatWidget() {
                 style={{
                   backgroundColor: streaming || !input.trim() ? colors.border.dark : colors.brand.teal,
                   border: "none",
-                  borderRadius: "12px",
+                  borderRadius: radius.input,
                   width: "44px",
                   height: "44px",
                   cursor: streaming || !input.trim() ? "default" : "pointer",

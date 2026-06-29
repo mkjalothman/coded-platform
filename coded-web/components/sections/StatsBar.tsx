@@ -4,7 +4,8 @@ import Container from "@/components/ui/Container";
 import Reveal from "@/components/motion/Reveal";
 import AnimatedCounter from "@/components/motion/AnimatedCounter";
 import { colors } from "@/design-system";
-import { fontSize, fontWeight } from "@/design-system/typography";
+import { fontSize, fontWeight, lineHeight } from "@/design-system/typography";
+import { spacing } from "@/design-system/spacing";
 import { stats } from "@/data/programs";
 
 export default function StatsBar() {
@@ -14,7 +15,7 @@ export default function StatsBar() {
         <div style={{
           display: "grid",
           gridTemplateColumns: "repeat(4, 1fr)",
-          gap: "40px",
+          gap: spacing.gap.xxl,
           textAlign: "center",
         }} className="stats-grid">
           {stats.map(s => (
@@ -27,14 +28,14 @@ export default function StatsBar() {
                   fontSize: fontSize.stat,
                   fontWeight: fontWeight.black,
                   color: colors.brand.teal,
-                  lineHeight: 1,
+                  lineHeight: lineHeight.stat,
                   display: "block",
                 }}
               />
               <div style={{
-                color: "rgba(255,255,255,0.7)",
+                color: colors.text.onDarkMuted,
                 fontSize: fontSize.body,
-                marginTop: "12px",
+                marginTop: spacing.gap.sm,
                 fontWeight: fontWeight.medium,
                 letterSpacing: "0.02em",
               }}>

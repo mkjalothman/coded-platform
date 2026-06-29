@@ -7,6 +7,7 @@ import SectionHeader from "@/components/ui/SectionHeader";
 import Reveal from "@/components/motion/Reveal";
 import { colors } from "@/design-system";
 import { fontSize, fontWeight, lineHeight } from "@/design-system/typography";
+import { spacing } from "@/design-system/spacing";
 import { faqs } from "@/data/programs";
 
 function FAQItem({ question, answer, isOpen, onToggle }: {
@@ -23,7 +24,7 @@ function FAQItem({ question, answer, isOpen, onToggle }: {
         onClick={onToggle}
         style={{
           width: "100%",
-          padding: "24px 0",
+          padding: `${spacing.gap.lg} 0`,
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
@@ -31,11 +32,11 @@ function FAQItem({ question, answer, isOpen, onToggle }: {
           border: "none",
           cursor: "pointer",
           textAlign: "left",
-          gap: "16px",
+          gap: spacing.gap.md,
         }}
       >
         <span style={{
-          fontSize: "18px",
+          fontSize: fontSize.subtitle,
           fontWeight: fontWeight.semibold,
           color: colors.text.heading,
           lineHeight: 1.4,
@@ -69,7 +70,7 @@ function FAQItem({ question, answer, isOpen, onToggle }: {
               color: colors.text.body,
               fontSize: fontSize.body,
               lineHeight: lineHeight.relaxed,
-              paddingBottom: "24px",
+              paddingBottom: spacing.gap.lg,
               maxWidth: "700px",
             }}>
               {answer}

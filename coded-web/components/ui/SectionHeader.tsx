@@ -1,5 +1,7 @@
 import Reveal from "@/components/motion/Reveal";
+import { colors } from "@/design-system";
 import { eyebrowStyle, sectionHeadingStyle, bodyStyle } from "@/design-system/typography";
+import { spacing } from "@/design-system/spacing";
 
 interface SectionHeaderProps {
   eyebrow: string;
@@ -13,7 +15,7 @@ export default function SectionHeader({
   eyebrow,
   heading,
   subtitle,
-  headingColor = "#0a0f2e",
+  headingColor = colors.text.heading,
   subtitleDelay = 0.1,
 }: SectionHeaderProps) {
   return (
@@ -22,7 +24,7 @@ export default function SectionHeader({
         <p style={eyebrowStyle}>{eyebrow}</p>
         <h2 style={{
           ...sectionHeadingStyle(headingColor),
-          marginBottom: subtitle ? "16px" : "56px",
+          marginBottom: subtitle ? spacing.eyebrowToHeading : spacing.headingToContent,
         }}>
           {heading}
         </h2>
@@ -32,7 +34,7 @@ export default function SectionHeader({
           <p style={{
             ...bodyStyle,
             textAlign: "center",
-            marginBottom: "56px",
+            marginBottom: spacing.headingToContent,
             maxWidth: "600px",
             marginLeft: "auto",
             marginRight: "auto",

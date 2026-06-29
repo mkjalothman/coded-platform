@@ -1,6 +1,8 @@
 "use client";
 
-import { colors, gradients, shadows } from "@/design-system";
+import { colors, gradients, shadows, overlay } from "@/design-system";
+import { fontSize, fontWeight } from "@/design-system/typography";
+import { radius } from "@/design-system/spacing";
 import { navLinks } from "@/data/navigation";
 
 interface MobileMenuProps {
@@ -14,7 +16,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 60 }}>
       <div
-        style={{ position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.5)" }}
+        style={{ position: "fixed", inset: 0, backgroundColor: overlay.backdrop }}
         onClick={onClose}
       />
       <div style={{
@@ -63,7 +65,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                 fontWeight: 500,
                 transition: "background 0.2s ease",
               }}
-              onMouseEnter={e => (e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.05)")}
+              onMouseEnter={e => (e.currentTarget.style.backgroundColor = overlay.subtleBg)}
               onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
             >
               {link.label}

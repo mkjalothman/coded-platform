@@ -1,7 +1,8 @@
 "use client";
 
-import { colors } from "@/design-system";
-import { spacing } from "@/design-system/spacing";
+import { colors, overlay } from "@/design-system";
+import { fontSize, fontWeight } from "@/design-system/typography";
+import { spacing, radius } from "@/design-system/spacing";
 import { footerSections, socialLinks } from "@/data/navigation";
 
 function SocialIcon({ href, label, iconPath, fill }: {
@@ -23,8 +24,8 @@ function SocialIcon({ href, label, iconPath, fill }: {
         justifyContent: "center",
         width: "36px",
         height: "36px",
-        borderRadius: "8px",
-        backgroundColor: "rgba(255,255,255,0.05)",
+        borderRadius: radius.socialIcon,
+        backgroundColor: overlay.subtleBg,
       }}
       onMouseEnter={e => (e.currentTarget.style.color = colors.brand.teal)}
       onMouseLeave={e => (e.currentTarget.style.color = colors.text.bodyDark)}
@@ -71,9 +72,9 @@ export default function Footer() {
               </a>
               <p style={{
                 color: colors.text.bodyDark,
-                fontSize: "11px",
+                fontSize: fontSize.eyebrow,
                 letterSpacing: "0.15em",
-                fontWeight: 600,
+                fontWeight: fontWeight.semibold,
                 textTransform: "uppercase",
                 lineHeight: 1.6,
                 maxWidth: "200px",
@@ -97,9 +98,9 @@ export default function Footer() {
             {footerSections.map(section => (
               <div key={section.title}>
                 <h3 style={{
-                  color: "white",
-                  fontSize: "14px",
-                  fontWeight: 700,
+                  color: colors.text.headingLight,
+                  fontSize: fontSize.small,
+                  fontWeight: fontWeight.bold,
                   marginBottom: "20px",
                   letterSpacing: "0.02em",
                 }}>
@@ -112,7 +113,7 @@ export default function Footer() {
                         href={link.href}
                         style={{
                           color: colors.text.bodyDark,
-                          fontSize: "14px",
+                          fontSize: fontSize.small,
                           textDecoration: "none",
                           transition: "color 0.2s ease",
                         }}

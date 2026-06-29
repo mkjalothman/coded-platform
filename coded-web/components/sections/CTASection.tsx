@@ -2,32 +2,33 @@
 
 import Reveal from "@/components/motion/Reveal";
 import Button from "@/components/ui/Button";
+import { colors } from "@/design-system";
 import { fontSize, fontWeight, lineHeight } from "@/design-system/typography";
 import { gradients } from "@/design-system/colors";
-import { containerStyle } from "@/design-system/spacing";
+import { containerStyle, spacing } from "@/design-system/spacing";
 
 export default function CTASection() {
   return (
     <Reveal>
       <section id="apply" style={{
         background: gradients.primaryCta,
-        padding: "96px 0",
+        padding: `${spacing.sectionY} 0`,
         textAlign: "center",
       }}>
         <div style={containerStyle}>
           <h2 style={{
             fontSize: fontSize.h2,
             fontWeight: fontWeight.black,
-            color: "white",
-            marginBottom: "16px",
+            color: colors.text.headingLight,
+            marginBottom: spacing.gap.md,
             lineHeight: lineHeight.tight,
           }}>
             Ready to build real skills?
           </h2>
           <p style={{
-            color: "rgba(255,255,255,0.85)",
-            fontSize: "18px",
-            marginBottom: "40px",
+            color: colors.text.onCtaMuted,
+            fontSize: fontSize.subtitle,
+            marginBottom: spacing.ctaTopMargin,
             lineHeight: lineHeight.relaxed,
           }}>
             Join the next cohort. Seats are limited.

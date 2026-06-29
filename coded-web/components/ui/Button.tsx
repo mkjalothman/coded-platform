@@ -1,8 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { gradients, shadows, colors } from "@/design-system";
-import { radius } from "@/design-system/spacing";
+import { gradients, shadows, colors, overlay } from "@/design-system";
+import { fontSize as fs, fontWeight as fw } from "@/design-system/typography";
+import { radius, spacing } from "@/design-system/spacing";
 import { hover } from "@/design-system/motion";
 
 type ButtonVariant = "primary" | "outline" | "track" | "frosted" | "inverted";
@@ -19,13 +20,13 @@ interface ButtonProps {
 
 const baseStyle: React.CSSProperties = {
   borderRadius: radius.pill,
-  fontWeight: 700,
-  fontSize: "15px",
+  fontWeight: fw.bold,
+  fontSize: fs.nav,
   border: "none",
   cursor: "pointer",
   display: "inline-flex",
   alignItems: "center",
-  gap: "8px",
+  gap: spacing.gap.xs,
   textDecoration: "none",
   transition: "all 0.2s ease",
 };
@@ -34,41 +35,41 @@ const variants: Record<ButtonVariant, (trackColor?: string) => React.CSSProperti
   primary: () => ({
     ...baseStyle,
     background: gradients.primaryCta,
-    color: "white",
+    color: colors.text.headingLight,
     padding: "14px 32px",
     boxShadow: shadows.primaryButton,
   }),
   outline: () => ({
     ...baseStyle,
     background: "transparent",
-    color: "white",
+    color: colors.text.headingLight,
     padding: "14px 32px",
-    border: "1.5px solid rgba(255,255,255,0.3)",
-    fontWeight: 600,
+    border: `1.5px solid ${overlay.frostedBorder}`,
+    fontWeight: fw.semibold,
   }),
   track: (trackColor) => ({
     ...baseStyle,
     background: gradients.trackButton(trackColor || colors.brand.teal),
-    color: "white",
+    color: colors.text.headingLight,
     padding: "14px 32px",
     boxShadow: shadows.trackButton(trackColor || colors.brand.teal),
   }),
   frosted: () => ({
     ...baseStyle,
-    backgroundColor: "rgba(255,255,255,0.15)",
-    color: "white",
+    backgroundColor: overlay.frostedBg,
+    color: colors.text.headingLight,
     padding: "12px 28px",
-    fontSize: "14px",
-    border: "1.5px solid rgba(255,255,255,0.2)",
+    fontSize: fs.small,
+    border: `1.5px solid ${overlay.frostedBorder}`,
     backdropFilter: "blur(4px)",
   }),
   inverted: () => ({
     ...baseStyle,
-    backgroundColor: "white",
+    backgroundColor: colors.surface.white,
     color: colors.brand.tealDark,
     padding: "16px 48px",
-    fontWeight: 800,
-    fontSize: "16px",
+    fontWeight: fw.black,
+    fontSize: fs.body,
     boxShadow: shadows.ctaButton,
   }),
 };

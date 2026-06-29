@@ -33,7 +33,11 @@ export const colors = {
     body: "#6b7280",
     bodyDark: "#8892b0",
     bodySubtle: "#cbd5e1",
+    bodyChat: "#e2e8f0",
     navDefault: "rgba(255,255,255,0.7)",
+    onDarkMuted: "rgba(255,255,255,0.7)",
+    onColoredMuted: "rgba(255,255,255,0.75)",
+    onCtaMuted: "rgba(255,255,255,0.85)",
   },
 
   border: {
@@ -57,6 +61,14 @@ export const shadows = {
   ctaButton: "0 4px 24px rgba(0,0,0,0.15)",
   navbarScrolled: "0 4px 20px rgba(0,0,0,0.3)",
   chatFloat: "0 4px 20px rgba(0,184,169,0.4)",
+  chatFloatHover: "0 6px 28px rgba(0,184,169,0.5)",
   chatPanel: "0 12px 48px rgba(0,0,0,0.25)",
   hoverCard: "0 12px 40px rgba(0,0,0,0.12)",
+} as const;
+
+export const overlay = {
+  frostedBg: "rgba(255,255,255,0.15)",
+  frostedBorder: "rgba(255,255,255,0.2)",
+  subtleBg: "rgba(255,255,255,0.05)",
+  backdrop: "rgba(0,0,0,0.5)",
 } as const;
