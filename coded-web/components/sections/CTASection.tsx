@@ -1,13 +1,17 @@
 "use client";
 
+import { useState } from "react";
 import Reveal from "@/components/motion/Reveal";
 import Button from "@/components/ui/Button";
+import ApplyModal from "@/components/ui/ApplyModal";
 import { colors } from "@/design-system";
 import { fontSize, fontWeight, lineHeight } from "@/design-system/typography";
 import { gradients } from "@/design-system/colors";
 import { containerStyle, spacing } from "@/design-system/spacing";
 
 export default function CTASection() {
+  const [modalOpen, setModalOpen] = useState(false);
+
   return (
     <Reveal>
       <section id="apply" style={{
@@ -33,9 +37,11 @@ export default function CTASection() {
           }}>
             Join the next cohort. Seats are limited.
           </p>
-          <Button variant="inverted">Apply Now →</Button>
+          <Button variant="inverted" onClick={() => setModalOpen(true)}>Apply Now →</Button>
         </div>
       </section>
+
+      <ApplyModal open={modalOpen} onClose={() => setModalOpen(false)} />
     </Reveal>
   );
 }

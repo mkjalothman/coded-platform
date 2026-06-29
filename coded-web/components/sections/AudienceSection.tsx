@@ -1,10 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import Container from "@/components/ui/Container";
 import SectionHeader from "@/components/ui/SectionHeader";
 import Card from "@/components/ui/Card";
 import Badge from "@/components/ui/Badge";
 import Button from "@/components/ui/Button";
+import ApplyModal from "@/components/ui/ApplyModal";
 import StaggerGrid from "@/components/motion/StaggerGrid";
 import { colors } from "@/design-system";
 import { fontSize, fontWeight, lineHeight } from "@/design-system/typography";
@@ -12,6 +14,9 @@ import { spacing } from "@/design-system/spacing";
 import type { Audience } from "@/data/programs";
 
 export default function AudienceSection({ audiences }: { audiences: Audience[] }) {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedAudience, setSelectedAudience] = useState<string | undefined>();
+
   return (
     <Container id="audience" bg={colors.surface.white}>
       <SectionHeader eyebrow="WHO WE SERVE" heading="Who is CODED for?" />
@@ -36,12 +41,25 @@ export default function AudienceSection({ audiences }: { audiences: Audience[] }
             <p style={{ color: colors.text.onColoredMuted, fontSize: fontSize.body, lineHeight: lineHeight.relaxed }}>
               {aud.desc}
             </p>
-            <Button variant="frosted" style={{ alignSelf: "flex-start", marginTop: "8px" }}>
+            <Button
+              variant="frosted"
+              style={{ alignSelf: "flex-start", marginTop: "8px" }}
+              onClick={() => {
+                setSelectedAudience(aud.title);
+                setModalOpen(true);
+              }}
+            >
               {aud.cta}
             </Button>
           </Card>
         ))}
       </StaggerGrid>
+
+      <ApplyModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        programName={selectedAudience}
+      />
 
       <style>{`
         @media (max-width: 768px) {
