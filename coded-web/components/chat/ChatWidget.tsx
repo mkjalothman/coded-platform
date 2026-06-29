@@ -4,14 +4,13 @@ import { useState, useRef, useEffect } from "react";
 import { colors, shadows } from "@/design-system";
 import { fontSize, fontWeight } from "@/design-system/typography";
 import { radius, spacing } from "@/design-system/spacing";
-import { streamChat, type ChatMessage } from "@/lib/ai/chat";
+import { useChat } from "@/hooks/useChat";
 import { chatStarters } from "@/data/navigation";
 
 export default function ChatWidget() {
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
-  const [streaming, setStreaming] = useState(false);
+  const { messages, streaming, sendMessage } = useChat();
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -27,30 +26,10 @@ export default function ChatWidget() {
     }
   }, [open]);
 
-  async function sendMessage(text: string) {
-    if (!text.trim() || streaming) return;
-
-    const userMsg: ChatMessage = { role: "user", content: text.trim() };
-    const newMessages = [...messages, userMsg];
-    setMessages(newMessages);
+  function handleSend(text: string) {
+    if (!text.trim()) return;
     setInput("");
-    setStreaming(true);
-
-    let assistantText = "";
-    setMessages([...newMessages, { role: "assistant", content: "" }]);
-
-    await streamChat(
-      newMessages,
-      (chunk) => {
-        assistantText += chunk;
-        setMessages([...newMessages, { role: "assistant", content: assistantText }]);
-      },
-      () => setStreaming(false),
-      (error) => {
-        setMessages([...newMessages, { role: "assistant", content: error }]);
-        setStreaming(false);
-      }
-    );
+    sendMessage(text);
   }
 
   return (
@@ -168,7 +147,7 @@ export default function ChatWidget() {
                   {chatStarters.map((s) => (
                     <button
                       key={s}
-                      onClick={() => sendMessage(s)}
+                      onClick={() => handleSend(s)}
                       style={{
                         backgroundColor: "transparent",
                         border: `1px solid ${colors.border.dark}`,
@@ -235,7 +214,7 @@ export default function ChatWidget() {
             borderTop: `1px solid ${colors.border.dark}`,
           }}>
             <form
-              onSubmit={(e) => { e.preventDefault(); sendMessage(input); }}
+              onSubmit={(e) => { e.preventDefault(); handleSend(input); }}
               style={{ display: "flex", gap: spacing.gap.xs }}
             >
               <input
