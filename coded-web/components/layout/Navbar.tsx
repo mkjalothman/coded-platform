@@ -1,16 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import MobileMenu from "./MobileMenu";
-
-const navLinks = [
-  { label: "Bootcamps", href: "/bootcamps" },
-  { label: "Companies", href: "/companies" },
-  { label: "Kids & Youth", href: "/youth" },
-  { label: "Community", href: "/community" },
-  { label: "About", href: "/about" },
-];
+import Button from "@/components/ui/Button";
+import { colors, shadows } from "@/design-system";
+import { spacing } from "@/design-system/spacing";
+import { navbar, cssTransition } from "@/design-system/motion";
+import { navLinks } from "@/data/navigation";
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -24,66 +20,86 @@ export default function Navbar() {
 
   return (
     <>
-      <header
-        className={`sticky top-0 z-40 w-full bg-white transition-shadow duration-200 ${
-          scrolled ? "shadow-md" : "shadow-none"
-        }`}
-      >
-        <div className="max-w-7xl mx-auto px-6 md:px-12">
-          <div className="flex h-16 items-center justify-between">
-            <Link
-              href="/"
-              className="inline-flex items-center border-2 border-coded-navy rounded-[6px] px-3.5 py-1.5 mr-8"
-            >
-              <span className="text-lg font-bold tracking-tight text-coded-navy">
-                CODED
-              </span>
-            </Link>
+      <nav style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 50,
+        backgroundColor: scrolled ? "rgba(13, 20, 54, 0.95)" : colors.surface.dark,
+        backdropFilter: scrolled ? "blur(12px)" : "none",
+        WebkitBackdropFilter: scrolled ? "blur(12px)" : "none",
+        borderBottom: scrolled ? `1px solid ${colors.border.navScrolled}` : "1px solid transparent",
+        boxShadow: scrolled ? shadows.navbarScrolled : "none",
+        transition: navbar.transition,
+      }}>
+        <div style={{
+          maxWidth: spacing.containerMax,
+          margin: "0 auto",
+          padding: spacing.containerPadding,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          height: spacing.navbarHeight,
+        }}>
+          <a href="/" style={{
+            border: "2px solid white",
+            padding: "4px 10px",
+            textDecoration: "none",
+            display: "inline-flex",
+            alignItems: "center",
+          }}>
+            <span style={{ color: "white", fontWeight: 700, fontSize: "18px", letterSpacing: "-0.01em" }}>CODED</span>
+          </a>
 
-            <nav className="hidden lg:flex items-center gap-8">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="text-sm font-medium text-coded-text hover:text-coded-navy transition-colors"
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
-
-            <div className="hidden lg:flex items-center">
-              <Link
-                href="/apply"
-                className="inline-flex items-center justify-center px-6 py-2.5 text-sm font-semibold rounded-[8px] bg-coded-teal text-white hover:bg-coded-teal/90 transition-colors"
+          <div style={{ display: "flex", alignItems: "center", gap: "32px" }} className="hidden md:flex">
+            {navLinks.map(link => (
+              <a
+                key={link.href}
+                href={link.href}
+                style={{
+                  color: colors.text.navDefault,
+                  fontSize: "14px",
+                  fontWeight: 500,
+                  textDecoration: "none",
+                  transition: cssTransition.color,
+                  letterSpacing: "0.01em",
+                }}
+                onMouseEnter={e => (e.currentTarget.style.color = colors.brand.teal)}
+                onMouseLeave={e => (e.currentTarget.style.color = colors.text.navDefault)}
               >
-                Apply Now
-              </Link>
-            </div>
-
-            <button
-              className="lg:hidden p-2 text-coded-text hover:text-coded-navy"
-              onClick={() => setMobileOpen(true)}
-              aria-label="Open menu"
-            >
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="3" y1="6" x2="21" y2="6" />
-                <line x1="3" y1="12" x2="21" y2="12" />
-                <line x1="3" y1="18" x2="21" y2="18" />
-              </svg>
-            </button>
+                {link.label}
+              </a>
+            ))}
           </div>
+
+          <Button href="#apply" style={{
+            padding: "10px 24px",
+            fontSize: "14px",
+          }} className="hidden md:inline-flex">
+            Apply Now
+          </Button>
+
+          <button
+            onClick={() => setMobileOpen(true)}
+            className="md:hidden"
+            style={{
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              padding: "8px",
+              color: "white",
+            }}
+            aria-label="Open menu"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          </button>
         </div>
-      </header>
+      </nav>
 
       <MobileMenu isOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
     </>

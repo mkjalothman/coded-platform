@@ -1,78 +1,83 @@
-import Link from "next/link";
+"use client";
+
+import { motion } from "framer-motion";
+import Button from "@/components/ui/Button";
+import { colors, gradients, heroStagger, reveal } from "@/design-system";
+import { fontSize, fontWeight, lineHeight } from "@/design-system/typography";
+import { containerStyle, spacing } from "@/design-system/spacing";
 
 export default function HeroSection() {
+  const fade = (del: number) => ({
+    initial: reveal.fadeUp.initial,
+    animate: reveal.fadeUp.visible,
+    transition: heroStagger.transition(del),
+  });
+
   return (
-    <section className="relative bg-coded-bg-dark overflow-hidden min-h-screen flex items-center">
-      {/* Radial blue glow */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="w-[800px] h-[800px] rounded-full bg-[#1a3a8f] opacity-20 blur-[150px]" />
-      </div>
+    <section style={{
+      backgroundColor: colors.surface.dark,
+      minHeight: "100vh",
+      display: "flex",
+      flexDirection: "column" as const,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundImage: gradients.heroGlow,
+      paddingTop: spacing.navbarHeight,
+      paddingBottom: spacing.navbarHeight,
+    }}>
+      <div style={{ ...containerStyle, textAlign: "center" as const, width: "100%" }}>
+        <motion.p {...fade(heroStagger.delays[0])} style={{
+          color: colors.brand.teal,
+          fontSize: fontSize.eyebrow,
+          letterSpacing: "0.15em",
+          fontWeight: fontWeight.semibold,
+          textTransform: "uppercase" as const,
+          marginBottom: spacing.gap.lg,
+        }}>
+          1st Coding Academy in the Arab World — Est 2015
+        </motion.p>
 
-      <div className="relative w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-24 py-20">
-        <div className="flex items-center justify-between">
-          {/* Left curly brace */}
-          <div className="hidden lg:flex items-center justify-center w-28 flex-shrink-0">
-            <span className="text-[140px] font-light text-coded-muted-dark/30 select-none leading-none">
-              &#123;
-            </span>
-          </div>
+        <motion.h1
+          initial={reveal.fadeUp.initial}
+          animate={reveal.fadeUp.visible}
+          transition={heroStagger.transition(heroStagger.delays[1])}
+          style={{
+            fontSize: fontSize.hero,
+            lineHeight: lineHeight.tight,
+            fontWeight: fontWeight.black,
+            color: colors.text.headingLight,
+            marginBottom: spacing.gap.lg,
+            maxWidth: "800px",
+            marginLeft: "auto",
+            marginRight: "auto",
+          }}
+        >
+          Build Real Tech Skills<br />
+          <span style={{ color: colors.brand.teal }}>Not Just Knowledge</span>
+        </motion.h1>
 
-          {/* Center content */}
-          <div className="flex-1 text-center max-w-4xl mx-auto flex flex-col items-center gap-8">
-            <h1 className="text-5xl md:text-7xl font-bold text-coded-text-light tracking-tight leading-[1.08]">
-              Build Real Tech Skills
-              <br />
-              <span className="text-coded-teal">Not Just Knowledge</span>
-            </h1>
+        <motion.p {...fade(heroStagger.delays[2])} style={{
+          fontSize: fontSize.subtitle,
+          color: colors.text.bodyDark,
+          lineHeight: lineHeight.relaxed,
+          margin: "0 auto",
+          maxWidth: "600px",
+          marginBottom: spacing.ctaTopMargin,
+        }}>
+          CODED programs are hands-on from day one — projects, coaching, and real standards.
+          Join as an adult, teen, or kid. Leave with work you can show.
+        </motion.p>
 
-            <p className="text-lg md:text-xl text-coded-muted-dark max-w-2xl leading-relaxed">
-              CODED programs are hands-on from day one — projects, coaching, and
-              real standards. Join as an adult, teen, or kid. Leave with work you
-              can show.
-            </p>
-
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
-              <Link
-                href="/bootcamps"
-                className="inline-flex items-center justify-center px-8 py-3.5 text-base font-semibold rounded-[10px] bg-coded-teal text-white hover:bg-coded-teal/90 transition-colors"
-              >
-                Explore Bootcamps
-              </Link>
-              <Link
-                href="/companies"
-                className="inline-flex items-center justify-center px-8 py-3.5 text-base font-medium text-coded-muted-dark hover:text-white transition-colors"
-              >
-                CODED For Companies
-                <svg
-                  className="ml-2 w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </Link>
-            </div>
-
-            <div className="flex items-center justify-center gap-3 text-xs font-semibold uppercase tracking-[0.2em] text-coded-muted-dark pt-8">
-              <span>1st Academy in the Arab World</span>
-              <span className="text-coded-teal">&lt;/&gt;</span>
-              <span>Est 2015</span>
-            </div>
-          </div>
-
-          {/* Right curly brace */}
-          <div className="hidden lg:flex items-center justify-center w-28 flex-shrink-0">
-            <span className="text-[140px] font-light text-coded-muted-dark/30 select-none leading-none">
-              &#125;
-            </span>
-          </div>
-        </div>
+        <motion.div {...fade(heroStagger.delays[3])} style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: spacing.gap.md,
+          flexWrap: "wrap" as const,
+        }}>
+          <Button href="#bootcamps">Explore Bootcamps <span>→</span></Button>
+          <Button variant="outline" href="#companies">CODED For Companies →</Button>
+        </motion.div>
       </div>
     </section>
   );

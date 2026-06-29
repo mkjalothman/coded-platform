@@ -2,34 +2,38 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
+import { reveal } from "@/design-system/motion";
+
+type RevealVariant = "fadeUp" | "fadeDown" | "fadeIn" | "fadeScale" | "slideLeft" | "slideRight";
 
 interface RevealProps {
   children: React.ReactNode;
+  variant?: RevealVariant;
   delay?: number;
   duration?: number;
-  y?: number;
   className?: string;
   once?: boolean;
 }
 
 export default function Reveal({
   children,
-  delay = 0,
-  duration = 0.6,
-  y = 40,
+  variant = "fadeUp",
+  delay: delayOverride = 0,
+  duration: durationOverride,
   className,
   once = true,
 }: RevealProps) {
   const ref = useRef(null);
-  const inView = useInView(ref, { once, margin: "-60px" });
+  const inView = useInView(ref, { once, margin: reveal.viewMargin });
+  const v = reveal[variant];
 
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y }}
-      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y }}
-      transition={{ duration, delay, ease: [0.25, 0.1, 0.25, 1] }}
       className={className}
+      initial={v.initial}
+      animate={inView ? v.visible : v.initial}
+      transition={reveal.transition(durationOverride, delayOverride)}
     >
       {children}
     </motion.div>

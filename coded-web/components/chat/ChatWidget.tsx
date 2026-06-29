@@ -1,24 +1,17 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-
-interface Message {
-  role: "user" | "assistant";
-  content: string;
-}
-
-const STARTERS = [
-  "I'm a university student",
-  "Training for my company",
-  "My kid wants to learn to code",
-  "Which bootcamp is right for me?",
-];
+import { colors, shadows } from "@/design-system";
+import { fontSize, fontWeight } from "@/design-system/typography";
+import { radius, spacing } from "@/design-system/spacing";
+import { cssTransition } from "@/design-system/motion";
+import { useChat } from "@/hooks/useChat";
+import { chatStarters } from "@/data/navigation";
 
 export default function ChatWidget() {
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
-  const [streaming, setStreaming] = useState(false);
+  const { messages, streaming, sendMessage } = useChat();
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -34,108 +27,41 @@ export default function ChatWidget() {
     }
   }, [open]);
 
-  async function sendMessage(text: string) {
-    if (!text.trim() || streaming) return;
-
-    const userMsg: Message = { role: "user", content: text.trim() };
-    const newMessages = [...messages, userMsg];
-    setMessages(newMessages);
+  function handleSend(text: string) {
+    if (!text.trim()) return;
     setInput("");
-    setStreaming(true);
-
-    setMessages([...newMessages, { role: "assistant", content: "" }]);
-
-    try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: newMessages }),
-      });
-
-      if (!res.ok) {
-        const err = await res.json();
-        setMessages([
-          ...newMessages,
-          {
-            role: "assistant",
-            content: err.error || "Something went wrong. Please try again.",
-          },
-        ]);
-        setStreaming(false);
-        return;
-      }
-
-      const reader = res.body?.getReader();
-      const decoder = new TextDecoder();
-      let assistantText = "";
-
-      if (reader) {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-
-          const chunk = decoder.decode(value);
-          const lines = chunk.split("\n");
-
-          for (const line of lines) {
-            if (line.startsWith("data: ")) {
-              const data = line.slice(6);
-              if (data === "[DONE]") break;
-              try {
-                const parsed = JSON.parse(data);
-                assistantText += parsed.text;
-                setMessages([
-                  ...newMessages,
-                  { role: "assistant", content: assistantText },
-                ]);
-              } catch {}
-            }
-          }
-        }
-      }
-    } catch {
-      setMessages([
-        ...newMessages,
-        {
-          role: "assistant",
-          content: "Connection error. Please try again.",
-        },
-      ]);
-    }
-
-    setStreaming(false);
+    sendMessage(text);
   }
 
   return (
     <>
-      {/* Floating button */}
       <button
         onClick={() => setOpen(!open)}
         aria-label={open ? "Close chat" : "Open chat"}
         style={{
           position: "fixed",
-          bottom: "24px",
-          right: "24px",
+          bottom: spacing.gap.lg,
+          right: spacing.gap.lg,
           zIndex: 9999,
           width: "60px",
           height: "60px",
           borderRadius: "50%",
-          backgroundColor: "#00b8a9",
+          backgroundColor: colors.brand.teal,
           border: "none",
           cursor: "pointer",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          boxShadow: "0 4px 20px rgba(0,184,169,0.4)",
-          transition: "transform 0.2s, box-shadow 0.2s",
+          boxShadow: shadows.chatFloat,
+          transition: `transform ${cssTransition.all.split(" ").slice(1).join(" ")}, ${cssTransition.shadow}`,
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.transform = "scale(1.08)";
-          e.currentTarget.style.boxShadow = "0 6px 28px rgba(0,184,169,0.5)";
+          e.currentTarget.style.boxShadow = shadows.chatFloatHover;
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.transform = "scale(1)";
-          e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,184,169,0.4)";
+          e.currentTarget.style.boxShadow = shadows.chatFloat;
         }}
       >
         {open ? (
@@ -150,124 +76,97 @@ export default function ChatWidget() {
         )}
       </button>
 
-      {/* Chat panel */}
       {open && (
-        <div
-          style={{
-            position: "fixed",
-            bottom: "100px",
-            right: "24px",
-            zIndex: 9998,
-            width: "min(420px, calc(100vw - 48px))",
-            height: "min(600px, calc(100vh - 140px))",
-            borderRadius: "20px",
-            overflow: "hidden",
-            display: "flex",
-            flexDirection: "column",
-            boxShadow: "0 12px 48px rgba(0,0,0,0.25)",
-            animation: "chatSlideUp 0.25s ease-out",
-          }}
-        >
-          {/* Header */}
-          <div
-            style={{
-              backgroundColor: "#0d1436",
-              padding: "20px 24px",
-              borderBottom: "1px solid #1e2d6b",
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-              <div
-                style={{
-                  width: "36px",
-                  height: "36px",
-                  borderRadius: "50%",
-                  backgroundColor: "#00b8a9",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexShrink: 0,
-                }}
-              >
+        <div style={{
+          position: "fixed",
+          bottom: "100px",
+          right: spacing.gap.lg,
+          zIndex: 9998,
+          width: "min(420px, calc(100vw - 48px))",
+          height: "min(600px, calc(100vh - 140px))",
+          borderRadius: "20px",
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column",
+          boxShadow: shadows.chatPanel,
+          animation: "chatSlideUp 0.25s ease-out",
+        }}>
+          <div style={{
+            backgroundColor: colors.surface.dark,
+            padding: `20px ${spacing.gap.lg}`,
+            borderBottom: `1px solid ${colors.border.dark}`,
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: spacing.gap.sm }}>
+              <div style={{
+                width: "36px",
+                height: "36px",
+                borderRadius: "50%",
+                backgroundColor: colors.brand.teal,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
                   <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z" />
                 </svg>
               </div>
               <div>
-                <div style={{ color: "white", fontWeight: "700", fontSize: "15px" }}>
-                  CODED Assistant
-                </div>
-                <div style={{ color: "#8892b0", fontSize: "12px" }}>
-                  Find your perfect program
-                </div>
+                <div style={{ color: colors.text.headingLight, fontWeight: fontWeight.bold, fontSize: fontSize.nav }}>CODED Assistant</div>
+                <div style={{ color: colors.text.bodyDark, fontSize: fontSize.caption }}>Find your perfect program</div>
               </div>
             </div>
           </div>
 
-          {/* Messages */}
-          <div
-            ref={scrollRef}
-            style={{
-              flex: 1,
-              overflowY: "auto",
-              padding: "20px",
-              backgroundColor: "#0a0f2e",
-              display: "flex",
-              flexDirection: "column",
-              gap: "16px",
-            }}
-          >
-            {/* Welcome message */}
+          <div ref={scrollRef} style={{
+            flex: 1,
+            overflowY: "auto",
+            padding: "20px",
+            backgroundColor: colors.brand.navy,
+            display: "flex",
+            flexDirection: "column",
+            gap: spacing.gap.md,
+          }}>
             {messages.length === 0 && (
               <div>
-                <div
-                  style={{
-                    backgroundColor: "#111d4a",
-                    borderRadius: "16px",
-                    borderTopLeftRadius: "4px",
-                    padding: "16px",
-                    color: "#e2e8f0",
-                    fontSize: "14px",
-                    lineHeight: "1.6",
-                    border: "1px solid #1e2d6b",
-                    marginBottom: "16px",
-                  }}
-                >
+                <div style={{
+                  backgroundColor: colors.surface.darkCard,
+                  borderRadius: radius.card,
+                  borderTopLeftRadius: "4px",
+                  padding: spacing.gap.md,
+                  color: colors.text.bodyChat,
+                  fontSize: fontSize.small,
+                  lineHeight: "1.6",
+                  border: `1px solid ${colors.border.dark}`,
+                  marginBottom: spacing.gap.md,
+                }}>
                   Hey! 👋 I&apos;m CODED&apos;s AI assistant. I can help you find the right
                   program — whether it&apos;s for you, your kid, or your team. What brings
                   you here?
                 </div>
-
-                {/* Starter chips */}
-                <div
-                  style={{
-                    display: "flex",
-                    flexWrap: "wrap",
-                    gap: "8px",
-                  }}
-                >
-                  {STARTERS.map((s) => (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: spacing.gap.xs }}>
+                  {chatStarters.map((s) => (
                     <button
                       key={s}
-                      onClick={() => sendMessage(s)}
+                      onClick={() => handleSend(s)}
                       style={{
                         backgroundColor: "transparent",
-                        border: "1px solid #1e2d6b",
-                        borderRadius: "999px",
-                        padding: "8px 16px",
-                        color: "#00b8a9",
-                        fontSize: "13px",
-                        fontWeight: "600",
+                        border: `1px solid ${colors.border.dark}`,
+                        borderRadius: radius.pill,
+                        padding: `${spacing.gap.xs} ${spacing.gap.md}`,
+                        color: colors.brand.teal,
+                        fontSize: fontSize.chip,
+                        fontWeight: fontWeight.semibold,
                         cursor: "pointer",
-                        transition: "all 0.15s",
+                        transition: cssTransition.all,
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = "#111d4a";
-                        e.currentTarget.style.borderColor = "#00b8a9";
+                        e.currentTarget.style.backgroundColor = colors.surface.darkCard;
+                        e.currentTarget.style.borderColor = colors.brand.teal;
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.backgroundColor = "transparent";
-                        e.currentTarget.style.borderColor = "#1e2d6b";
+                        e.currentTarget.style.borderColor = colors.border.dark;
                       }}
                     >
                       {s}
@@ -277,70 +176,47 @@ export default function ChatWidget() {
               </div>
             )}
 
-            {/* Chat messages */}
             {messages.map((msg, i) => (
-              <div
-                key={i}
-                style={{
-                  display: "flex",
-                  justifyContent: msg.role === "user" ? "flex-end" : "flex-start",
-                }}
-              >
-                <div
-                  style={{
-                    maxWidth: "85%",
-                    padding: "12px 16px",
-                    borderRadius: "16px",
-                    fontSize: "14px",
-                    lineHeight: "1.6",
-                    whiteSpace: "pre-wrap",
-                    ...(msg.role === "user"
-                      ? {
-                          backgroundColor: "#00b8a9",
-                          color: "white",
-                          borderBottomRightRadius: "4px",
-                        }
-                      : {
-                          backgroundColor: "#111d4a",
-                          color: "#e2e8f0",
-                          borderTopLeftRadius: "4px",
-                          border: "1px solid #1e2d6b",
-                        }),
-                  }}
-                >
+              <div key={i} style={{
+                display: "flex",
+                justifyContent: msg.role === "user" ? "flex-end" : "flex-start",
+              }}>
+                <div style={{
+                  maxWidth: "85%",
+                  padding: `${spacing.gap.sm} ${spacing.gap.md}`,
+                  borderRadius: radius.card,
+                  fontSize: fontSize.small,
+                  lineHeight: "1.6",
+                  whiteSpace: "pre-wrap",
+                  ...(msg.role === "user"
+                    ? { backgroundColor: colors.brand.teal, color: colors.text.headingLight, borderBottomRightRadius: "4px" }
+                    : { backgroundColor: colors.surface.darkCard, color: colors.text.bodyChat, borderTopLeftRadius: "4px", border: `1px solid ${colors.border.dark}` }),
+                }}>
                   {msg.content}
                   {streaming && i === messages.length - 1 && msg.role === "assistant" && (
-                    <span
-                      style={{
-                        display: "inline-block",
-                        width: "6px",
-                        height: "14px",
-                        backgroundColor: "#00b8a9",
-                        marginLeft: "2px",
-                        animation: "blink 1s infinite",
-                        verticalAlign: "text-bottom",
-                      }}
-                    />
+                    <span style={{
+                      display: "inline-block",
+                      width: "6px",
+                      height: "14px",
+                      backgroundColor: colors.brand.teal,
+                      marginLeft: "2px",
+                      animation: "blink 1s infinite",
+                      verticalAlign: "text-bottom",
+                    }} />
                   )}
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Input */}
-          <div
-            style={{
-              backgroundColor: "#0d1436",
-              padding: "16px 20px",
-              borderTop: "1px solid #1e2d6b",
-            }}
-          >
+          <div style={{
+            backgroundColor: colors.surface.dark,
+            padding: `${spacing.gap.md} 20px`,
+            borderTop: `1px solid ${colors.border.dark}`,
+          }}>
             <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                sendMessage(input);
-              }}
-              style={{ display: "flex", gap: "8px" }}
+              onSubmit={(e) => { e.preventDefault(); handleSend(input); }}
+              style={{ display: "flex", gap: spacing.gap.xs }}
             >
               <input
                 ref={inputRef}
@@ -351,12 +227,12 @@ export default function ChatWidget() {
                 disabled={streaming}
                 style={{
                   flex: 1,
-                  backgroundColor: "#111d4a",
-                  border: "1px solid #1e2d6b",
-                  borderRadius: "12px",
-                  padding: "12px 16px",
-                  color: "white",
-                  fontSize: "14px",
+                  backgroundColor: colors.surface.darkCard,
+                  border: `1px solid ${colors.border.dark}`,
+                  borderRadius: radius.input,
+                  padding: `${spacing.gap.sm} ${spacing.gap.md}`,
+                  color: colors.text.headingLight,
+                  fontSize: fontSize.small,
                   outline: "none",
                 }}
               />
@@ -364,9 +240,9 @@ export default function ChatWidget() {
                 type="submit"
                 disabled={streaming || !input.trim()}
                 style={{
-                  backgroundColor: streaming || !input.trim() ? "#1e2d6b" : "#00b8a9",
+                  backgroundColor: streaming || !input.trim() ? colors.border.dark : colors.brand.teal,
                   border: "none",
-                  borderRadius: "12px",
+                  borderRadius: radius.input,
                   width: "44px",
                   height: "44px",
                   cursor: streaming || !input.trim() ? "default" : "pointer",
@@ -374,7 +250,7 @@ export default function ChatWidget() {
                   alignItems: "center",
                   justifyContent: "center",
                   flexShrink: 0,
-                  transition: "background-color 0.15s",
+                  transition: cssTransition.background,
                 }}
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="white">

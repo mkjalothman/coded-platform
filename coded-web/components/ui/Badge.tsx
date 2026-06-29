@@ -1,13 +1,25 @@
+import { colors, overlay } from "@/design-system";
+import { fontSize, fontWeight } from "@/design-system/typography";
+import { radius } from "@/design-system/spacing";
+
 interface BadgeProps {
   children: React.ReactNode;
-  className?: string;
+  style?: React.CSSProperties;
 }
 
-export default function Badge({ children, className = "" }: BadgeProps) {
+export default function Badge({ children, style }: BadgeProps) {
   return (
-    <span
-      className={`inline-flex items-center px-3 py-1 text-xs font-medium uppercase tracking-wider rounded-full bg-coded-bg text-coded-muted border border-coded-border ${className}`}
-    >
+    <span style={{
+      backgroundColor: overlay.frostedBorder,
+      color: colors.text.headingLight,
+      padding: "6px 16px",
+      borderRadius: radius.pill,
+      fontSize: fontSize.caption,
+      fontWeight: fontWeight.semibold,
+      alignSelf: "flex-start",
+      backdropFilter: "blur(4px)",
+      ...style,
+    }}>
       {children}
     </span>
   );

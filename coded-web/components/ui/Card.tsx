@@ -1,23 +1,46 @@
+"use client";
+
+import HoverCard from "@/components/motion/HoverCard";
+import { colors, shadows, radius } from "@/design-system";
+
+type CardVariant = "light" | "dark" | "colored";
+
 interface CardProps {
   children: React.ReactNode;
-  className?: string;
-  hover?: boolean;
+  variant?: CardVariant;
+  bg?: string;
+  style?: React.CSSProperties;
 }
 
-export default function Card({
-  children,
-  className = "",
-  hover = false,
-}: CardProps) {
+const variantStyles: Record<CardVariant, React.CSSProperties> = {
+  light: {
+    backgroundColor: colors.surface.white,
+    borderRadius: radius.card,
+    boxShadow: shadows.card,
+    border: `1px solid ${colors.border.cardSubtle}`,
+  },
+  dark: {
+    backgroundColor: colors.surface.darkCard,
+    borderRadius: radius.card,
+    border: `1px solid ${colors.border.dark}`,
+  },
+  colored: {
+    borderRadius: radius.card,
+  },
+};
+
+export default function Card({ children, variant = "light", bg, style }: CardProps) {
+  const base = variantStyles[variant];
+  const combined: React.CSSProperties = {
+    ...base,
+    ...(bg ? { backgroundColor: bg } : {}),
+    padding: "32px",
+    ...style,
+  };
+
   return (
-    <div
-      className={`bg-coded-surface border border-coded-border rounded-[16px] p-6 shadow-sm ${
-        hover
-          ? "transition-all duration-200 hover:shadow-md hover:border-coded-border"
-          : ""
-      } ${className}`}
-    >
+    <HoverCard style={combined}>
       {children}
-    </div>
+    </HoverCard>
   );
 }

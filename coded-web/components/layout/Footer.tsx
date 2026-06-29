@@ -1,117 +1,128 @@
-import Link from "next/link";
+"use client";
 
-const footerSections = [
-  {
-    title: "Bootcamps",
-    links: [
-      { label: "Cybersecurity", href: "/bootcamps/cybersecurity" },
-      { label: "AI App Developer", href: "/bootcamps/ai-app-developer" },
-      { label: "Agentic AI", href: "/bootcamps/agentic-ai" },
-      { label: "AI & Data Science", href: "/bootcamps/data-science" },
-    ],
-  },
-  {
-    title: "Programs",
-    links: [
-      { label: "Kids & Youth", href: "/youth" },
-      { label: "For Companies", href: "/companies" },
-      { label: "Community", href: "/community" },
-      { label: "Events", href: "/events" },
-    ],
-  },
-  {
-    title: "About",
-    links: [
-      { label: "Our Story", href: "/about" },
-      { label: "Blog", href: "/blog" },
-      { label: "Careers", href: "/careers" },
-      { label: "Contact", href: "/contact" },
-    ],
-  },
-];
+import { colors, overlay } from "@/design-system";
+import { fontSize, fontWeight } from "@/design-system/typography";
+import { spacing, radius } from "@/design-system/spacing";
+import { cssTransition } from "@/design-system/motion";
+import { footerSections, socialLinks } from "@/data/navigation";
 
-const socialLinks = [
-  {
-    label: "Instagram",
-    href: "https://instagram.com/joincoded",
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-      </svg>
-    ),
-  },
-  {
-    label: "LinkedIn",
-    href: "https://linkedin.com/company/joincoded",
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
-        <rect x="2" y="9" width="4" height="12" />
-        <circle cx="4" cy="4" r="2" />
-      </svg>
-    ),
-  },
-  {
-    label: "TikTok",
-    href: "https://tiktok.com/@joincoded",
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 0 0-.79-.05A6.34 6.34 0 0 0 3.15 15a6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V8.51a8.27 8.27 0 0 0 4.76 1.5v-3.4a4.85 4.85 0 0 1-1-.08z" />
-      </svg>
-    ),
-  },
-];
+function SocialIcon({ href, label, iconPath, fill }: {
+  href: string;
+  label: string;
+  iconPath: string;
+  fill?: boolean;
+}) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{
+        color: colors.text.bodyDark,
+        transition: cssTransition.color,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        width: "36px",
+        height: "36px",
+        borderRadius: radius.socialIcon,
+        backgroundColor: overlay.subtleBg,
+      }}
+      onMouseEnter={e => (e.currentTarget.style.color = colors.brand.teal)}
+      onMouseLeave={e => (e.currentTarget.style.color = colors.text.bodyDark)}
+      aria-label={label}
+    >
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill={fill ? "currentColor" : "none"}
+        stroke={fill ? undefined : "currentColor"}
+        strokeWidth={fill ? undefined : "2"}
+        strokeLinecap={fill ? undefined : "round"}
+        strokeLinejoin={fill ? undefined : "round"}
+        dangerouslySetInnerHTML={{ __html: iconPath }}
+      />
+    </a>
+  );
+}
 
 export default function Footer() {
   return (
-    <footer className="bg-coded-bg-dark text-coded-text-light">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="py-12 lg:py-16">
-          <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
-            <div className="col-span-2 md:col-span-1">
-              <Link
-                href="/"
-                className="inline-flex items-center border-2 border-white rounded-[6px] px-3 py-1"
-              >
-                <span className="text-lg font-bold tracking-tight text-white">
-                  CODED
-                </span>
-              </Link>
-              <p className="mt-4 text-xs font-semibold uppercase tracking-[0.2em] text-coded-muted-dark max-w-xs leading-relaxed">
-                The go-to place for AI &amp; tech education
+    <footer style={{ backgroundColor: colors.surface.dark }}>
+      <div style={{
+        maxWidth: spacing.containerMax,
+        margin: "0 auto",
+        padding: spacing.containerPadding,
+      }}>
+        <div style={{ padding: "64px 0 48px" }}>
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "1.5fr 1fr 1fr 1fr",
+            gap: "48px",
+          }} className="footer-grid">
+            <div>
+              <a href="/" style={{
+                border: "2px solid white",
+                padding: "4px 10px",
+                display: "inline-block",
+                textDecoration: "none",
+                marginBottom: "16px",
+              }}>
+                <span style={{ color: "white", fontWeight: 700, fontSize: "18px" }}>CODED</span>
+              </a>
+              <p style={{
+                color: colors.text.bodyDark,
+                fontSize: fontSize.eyebrow,
+                letterSpacing: "0.15em",
+                fontWeight: fontWeight.semibold,
+                textTransform: "uppercase",
+                lineHeight: 1.6,
+                maxWidth: "200px",
+                marginBottom: "24px",
+              }}>
+                The Go-To Place for AI & Tech Education in Kuwait
               </p>
-              <div className="mt-6 flex items-center gap-4">
-                {socialLinks.map((social) => (
-                  <a
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                {socialLinks.map(social => (
+                  <SocialIcon
                     key={social.label}
                     href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-coded-muted-dark hover:text-white transition-colors"
-                    aria-label={social.label}
-                  >
-                    {social.icon}
-                  </a>
+                    label={social.label}
+                    iconPath={social.iconPath}
+                    fill={social.fill}
+                  />
                 ))}
               </div>
             </div>
 
-            {footerSections.map((section) => (
+            {footerSections.map(section => (
               <div key={section.title}>
-                <h3 className="text-sm font-semibold text-white">
+                <h3 style={{
+                  color: colors.text.headingLight,
+                  fontSize: fontSize.small,
+                  fontWeight: fontWeight.bold,
+                  marginBottom: "20px",
+                  letterSpacing: "0.02em",
+                }}>
                   {section.title}
                 </h3>
-                <ul className="mt-4 space-y-3">
-                  {section.links.map((link) => (
-                    <li key={link.href}>
-                      <Link
+                <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "12px" }}>
+                  {section.links.map(link => (
+                    <li key={link.label}>
+                      <a
                         href={link.href}
-                        className="text-sm text-coded-muted-dark hover:text-white transition-colors"
+                        style={{
+                          color: colors.text.bodyDark,
+                          fontSize: fontSize.small,
+                          textDecoration: "none",
+                          transition: cssTransition.color,
+                        }}
+                        onMouseEnter={e => (e.currentTarget.style.color = "white")}
+                        onMouseLeave={e => (e.currentTarget.style.color = colors.text.bodyDark)}
                       >
                         {link.label}
-                      </Link>
+                      </a>
                     </li>
                   ))}
                 </ul>
@@ -120,29 +131,32 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-coded-border-dark py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex flex-col sm:flex-row items-center gap-4 text-xs text-coded-muted-dark">
-            <span>2026 &copy; CODED</span>
-            <span className="hidden sm:inline">|</span>
-            <a
-              href="tel:+96560791018"
-              className="hover:text-white transition-colors"
-            >
-              +965 6079 1018
-            </a>
-            <span className="hidden sm:inline">|</span>
-            <a
-              href="mailto:hello@joincoded.com"
-              className="hover:text-white transition-colors"
-            >
-              hello@joincoded.com
-            </a>
-          </div>
-          <div className="text-xs text-coded-muted-dark">
+        <div style={{
+          borderTop: `1px solid ${colors.border.dark}`,
+          padding: "24px 0",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: "16px",
+        }}>
+          <span style={{ color: colors.text.bodyDark, fontSize: "13px" }}>
+            2026 &copy; CODED. All rights reserved.
+          </span>
+          <span style={{ color: colors.text.bodyDark, fontSize: "13px" }}>
             Kuwait Free Trade Zone
-          </div>
+          </span>
         </div>
       </div>
+
+      <style>{`
+        @media (max-width: 768px) {
+          .footer-grid { grid-template-columns: 1fr 1fr !important; }
+        }
+        @media (max-width: 480px) {
+          .footer-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </footer>
   );
 }

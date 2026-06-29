@@ -1,65 +1,97 @@
 "use client";
 
-import Link from "next/link";
-import Button from "@/components/ui/Button";
+import { colors, gradients, shadows, overlay } from "@/design-system";
+import { fontSize, fontWeight } from "@/design-system/typography";
+import { radius } from "@/design-system/spacing";
+import { cssTransition } from "@/design-system/motion";
+import { navLinks } from "@/data/navigation";
 
 interface MobileMenuProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const navLinks = [
-  { label: "Bootcamps", href: "/bootcamps" },
-  { label: "Companies", href: "/companies" },
-  { label: "Kids & Youth", href: "/youth" },
-  { label: "Community", href: "/community" },
-  { label: "About", href: "/about" },
-];
-
 export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 lg:hidden">
-      <div className="fixed inset-0 bg-black/40" onClick={onClose} />
-      <div className="fixed inset-y-0 right-0 w-full max-w-sm bg-white border-l border-coded-border p-6 flex flex-col">
-        <div className="flex justify-end mb-8">
+    <div style={{ position: "fixed", inset: 0, zIndex: 60 }}>
+      <div
+        style={{ position: "fixed", inset: 0, backgroundColor: overlay.backdrop }}
+        onClick={onClose}
+      />
+      <div style={{
+        position: "fixed",
+        top: 0,
+        right: 0,
+        bottom: 0,
+        width: "100%",
+        maxWidth: "320px",
+        backgroundColor: colors.surface.dark,
+        borderLeft: `1px solid ${colors.border.dark}`,
+        padding: "24px",
+        display: "flex",
+        flexDirection: "column",
+      }}>
+        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "32px" }}>
           <button
             onClick={onClose}
-            className="text-coded-muted hover:text-coded-text p-2"
+            style={{
+              background: "none",
+              border: "none",
+              color: colors.text.bodyDark,
+              cursor: "pointer",
+              padding: "8px",
+            }}
             aria-label="Close menu"
           >
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
           </button>
         </div>
-        <nav className="flex flex-col gap-2">
-          {navLinks.map((link) => (
-            <Link
+        <nav style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+          {navLinks.map(link => (
+            <a
               key={link.href}
               href={link.href}
               onClick={onClose}
-              className="text-coded-text hover:text-coded-navy px-4 py-3 rounded-[8px] hover:bg-coded-bg transition-colors text-lg font-medium"
+              style={{
+                color: "white",
+                textDecoration: "none",
+                padding: "12px 16px",
+                borderRadius: "8px",
+                fontSize: "16px",
+                fontWeight: 500,
+                transition: cssTransition.background,
+              }}
+              onMouseEnter={e => (e.currentTarget.style.backgroundColor = overlay.subtleBg)}
+              onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
             >
               {link.label}
-            </Link>
+            </a>
           ))}
         </nav>
-        <div className="mt-auto pt-8">
-          <Button variant="teal" size="lg" className="w-full">
+        <div style={{ marginTop: "auto", paddingTop: "32px" }}>
+          <a
+            href="#apply"
+            onClick={onClose}
+            style={{
+              display: "block",
+              textAlign: "center",
+              background: gradients.primaryCta,
+              color: "white",
+              padding: "14px 32px",
+              borderRadius: "999px",
+              fontWeight: 700,
+              fontSize: "15px",
+              textDecoration: "none",
+              boxShadow: shadows.primaryButton,
+            }}
+          >
             Apply Now
-          </Button>
+          </a>
         </div>
       </div>
     </div>

@@ -1,45 +1,32 @@
-const companies = [
-  "Boubyan Bank",
-  "Markaz",
-  "Floward",
-  "KISR",
-  "Zain",
-  "NBK",
-  "Agility",
-  "KFAS",
-  "Ooredoo",
-  "Gulf Bank",
-];
+"use client";
+
+import Container from "@/components/ui/Container";
+import Reveal from "@/components/motion/Reveal";
+import Marquee from "@/components/motion/Marquee";
+import { colors, spacing } from "@/design-system";
+import { eyebrowStyle } from "@/design-system/typography";
+import { companies } from "@/data/programs";
 
 export default function CompanyLogos() {
   return (
-    <section className="bg-white py-16 border-y border-gray-200/80">
-      <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-16">
-        <p className="text-center text-xs font-semibold uppercase tracking-[0.2em] text-coded-muted mb-10">
-          Trusted by leading companies
+    <Container id="companies" bg={colors.surface.light} padding={spacing.sectionYCompact}>
+      <Reveal>
+        <p style={{ ...eyebrowStyle, marginBottom: "32px" }}>
+          Trusted by Leading Companies in Kuwait
         </p>
-      </div>
-      <div className="overflow-hidden">
-        <div className="flex animate-[scroll_30s_linear_infinite] gap-6 items-center px-6">
-          {[...companies, ...companies].map((name, i) => (
-            <div
-              key={`${name}-${i}`}
-              className="flex-shrink-0 px-8 py-4 rounded-xl bg-gray-50 border border-gray-200"
-            >
-              <span className="text-sm font-semibold text-coded-muted whitespace-nowrap">
-                {name}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <style>{`
-        @keyframes scroll {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-      `}</style>
-    </section>
+      </Reveal>
+      <Marquee duration={20}>
+        {companies.map(c => (
+          <span key={c} style={{
+            color: "#9ca3af",
+            fontSize: "18px",
+            fontWeight: 600,
+            whiteSpace: "nowrap",
+          }}>
+            {c}
+          </span>
+        ))}
+      </Marquee>
+    </Container>
   );
 }
