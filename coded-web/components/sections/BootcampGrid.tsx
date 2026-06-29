@@ -7,6 +7,7 @@ import Button from "@/components/ui/Button";
 import StaggerGrid from "@/components/motion/StaggerGrid";
 import { colors } from "@/design-system";
 import { fontSize, fontWeight, lineHeight } from "@/design-system/typography";
+import { spacing } from "@/design-system/spacing";
 import { bootcamps } from "@/data/programs";
 
 export default function BootcampGrid() {
@@ -20,14 +21,15 @@ export default function BootcampGrid() {
       <StaggerGrid style={{
         display: "grid",
         gridTemplateColumns: "repeat(2, 1fr)",
-        gap: "24px",
+        gap: spacing.cardGap,
+        width: "100%",
       }} staggerDelay={0.12} className="bootcamp-grid">
         {bootcamps.map((boot) => (
           <Card key={boot.title} style={{
-            padding: "36px",
+            padding: spacing.cardPaddingLarge,
             display: "flex",
             flexDirection: "column",
-            gap: "16px",
+            gap: spacing.gap.md,
           }}>
             <h3 style={{
               fontSize: fontSize.h3,
