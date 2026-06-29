@@ -9,9 +9,9 @@ import StaggerGrid from "@/components/motion/StaggerGrid";
 import { colors } from "@/design-system";
 import { fontSize, fontWeight, lineHeight } from "@/design-system/typography";
 import { spacing } from "@/design-system/spacing";
-import { audiences } from "@/data/programs";
+import type { Audience } from "@/data/programs";
 
-export default function AudienceSection() {
+export default function AudienceSection({ audiences }: { audiences: Audience[] }) {
   return (
     <Container id="audience" bg={colors.surface.white}>
       <SectionHeader eyebrow="WHO WE SERVE" heading="Who is CODED for?" />

@@ -8,9 +8,10 @@ import StaggerGrid from "@/components/motion/StaggerGrid";
 import { colors } from "@/design-system";
 import { fontSize, fontWeight, lineHeight } from "@/design-system/typography";
 import { spacing } from "@/design-system/spacing";
-import { bootcamps } from "@/data/programs";
+import type { Bootcamp } from "@/data/programs";
 
-export default function BootcampGrid() {
+export default function BootcampGrid({ programs }: { programs: Bootcamp[] }) {
+  const bootcamps = programs;
   return (
     <Container id="bootcamps" bg={colors.surface.light}>
       <SectionHeader

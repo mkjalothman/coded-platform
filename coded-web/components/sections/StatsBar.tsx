@@ -6,9 +6,9 @@ import AnimatedCounter from "@/components/motion/AnimatedCounter";
 import { colors } from "@/design-system";
 import { fontSize, fontWeight, lineHeight } from "@/design-system/typography";
 import { spacing } from "@/design-system/spacing";
-import { stats } from "@/data/programs";
+import type { Stat } from "@/data/programs";
 
-export default function StatsBar() {
+export default function StatsBar({ stats }: { stats: Stat[] }) {
   return (
     <Container bg={colors.surface.dark}>
       <Reveal>

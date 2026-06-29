@@ -5,9 +5,7 @@ import Reveal from "@/components/motion/Reveal";
 import Marquee from "@/components/motion/Marquee";
 import { colors, spacing } from "@/design-system";
 import { eyebrowStyle } from "@/design-system/typography";
-import { companies } from "@/data/programs";
-
-export default function CompanyLogos() {
+export default function CompanyLogos({ companies }: { companies: string[] }) {
   return (
     <Container id="companies" bg={colors.surface.light} padding={spacing.sectionYCompact}>
       <Reveal>
