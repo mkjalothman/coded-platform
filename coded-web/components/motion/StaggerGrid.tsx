@@ -15,7 +15,7 @@ export default function StaggerGrid({
   children,
   className,
   style,
-  staggerDelay = 0.1,
+  staggerDelay = 0.08,
 }: StaggerGridProps) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: stagger.viewMargin });

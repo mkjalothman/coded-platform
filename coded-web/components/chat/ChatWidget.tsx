@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { colors, shadows } from "@/design-system";
 import { fontSize, fontWeight } from "@/design-system/typography";
 import { radius, spacing } from "@/design-system/spacing";
+import { cssTransition } from "@/design-system/motion";
 import { useChat } from "@/hooks/useChat";
 import { chatStarters } from "@/data/navigation";
 
@@ -52,7 +53,7 @@ export default function ChatWidget() {
           alignItems: "center",
           justifyContent: "center",
           boxShadow: shadows.chatFloat,
-          transition: "transform 0.2s, box-shadow 0.2s",
+          transition: `transform ${cssTransition.all.split(" ").slice(1).join(" ")}, ${cssTransition.shadow}`,
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.transform = "scale(1.08)";
@@ -157,7 +158,7 @@ export default function ChatWidget() {
                         fontSize: fontSize.chip,
                         fontWeight: fontWeight.semibold,
                         cursor: "pointer",
-                        transition: "all 0.15s",
+                        transition: cssTransition.all,
                       }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.backgroundColor = colors.surface.darkCard;
@@ -249,7 +250,7 @@ export default function ChatWidget() {
                   alignItems: "center",
                   justifyContent: "center",
                   flexShrink: 0,
-                  transition: "background-color 0.15s",
+                  transition: cssTransition.background,
                 }}
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="white">

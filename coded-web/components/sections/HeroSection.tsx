@@ -2,15 +2,15 @@
 
 import { motion } from "framer-motion";
 import Button from "@/components/ui/Button";
-import { colors, gradients, heroStagger } from "@/design-system";
+import { colors, gradients, heroStagger, reveal } from "@/design-system";
 import { fontSize, fontWeight, lineHeight } from "@/design-system/typography";
 import { containerStyle, spacing } from "@/design-system/spacing";
 
 export default function HeroSection() {
-  const fade = (delay: number) => ({
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0 },
-    transition: heroStagger.transition(delay),
+  const fade = (del: number) => ({
+    initial: reveal.fadeUp.initial,
+    animate: reveal.fadeUp.visible,
+    transition: heroStagger.transition(del),
   });
 
   return (
@@ -38,9 +38,9 @@ export default function HeroSection() {
         </motion.p>
 
         <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: heroStagger.delays[1] }}
+          initial={reveal.fadeUp.initial}
+          animate={reveal.fadeUp.visible}
+          transition={heroStagger.transition(heroStagger.delays[1])}
           style={{
             fontSize: fontSize.hero,
             lineHeight: lineHeight.tight,

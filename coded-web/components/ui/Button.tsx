@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { gradients, shadows, colors, overlay } from "@/design-system";
 import { fontSize as fs, fontWeight as fw } from "@/design-system/typography";
 import { radius, spacing } from "@/design-system/spacing";
-import { hover } from "@/design-system/motion";
+import { hover, cssTransition } from "@/design-system/motion";
 
 type ButtonVariant = "primary" | "outline" | "track" | "frosted" | "inverted";
 
@@ -28,7 +28,7 @@ const baseStyle: React.CSSProperties = {
   alignItems: "center",
   gap: spacing.gap.xs,
   textDecoration: "none",
-  transition: "all 0.2s ease",
+  transition: cssTransition.all,
 };
 
 const variants: Record<ButtonVariant, (trackColor?: string) => React.CSSProperties> = {

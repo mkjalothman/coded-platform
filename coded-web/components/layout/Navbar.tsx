@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import MobileMenu from "./MobileMenu";
 import Button from "@/components/ui/Button";
 import { colors, shadows } from "@/design-system";
 import { spacing } from "@/design-system/spacing";
+import { navbar, cssTransition } from "@/design-system/motion";
 import { navLinks } from "@/data/navigation";
 
 export default function Navbar() {
@@ -31,7 +31,7 @@ export default function Navbar() {
         WebkitBackdropFilter: scrolled ? "blur(12px)" : "none",
         borderBottom: scrolled ? `1px solid ${colors.border.navScrolled}` : "1px solid transparent",
         boxShadow: scrolled ? shadows.navbarScrolled : "none",
-        transition: "all 0.3s ease",
+        transition: navbar.transition,
       }}>
         <div style={{
           maxWidth: spacing.containerMax,
@@ -62,7 +62,7 @@ export default function Navbar() {
                   fontSize: "14px",
                   fontWeight: 500,
                   textDecoration: "none",
-                  transition: "color 0.2s ease",
+                  transition: cssTransition.color,
                   letterSpacing: "0.01em",
                 }}
                 onMouseEnter={e => (e.currentTarget.style.color = colors.brand.teal)}

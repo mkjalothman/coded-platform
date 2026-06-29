@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Container from "@/components/ui/Container";
 import SectionHeader from "@/components/ui/SectionHeader";
 import Reveal from "@/components/motion/Reveal";
-import { colors } from "@/design-system";
+import { colors, accordion } from "@/design-system";
 import { fontSize, fontWeight, lineHeight } from "@/design-system/typography";
 import { spacing } from "@/design-system/spacing";
 import { faqs } from "@/data/programs";
@@ -16,6 +16,8 @@ function FAQItem({ question, answer, isOpen, onToggle }: {
   isOpen: boolean;
   onToggle: () => void;
 }) {
+  const rotateProps = accordion.rotate(isOpen);
+
   return (
     <div style={{
       borderBottom: `1px solid ${colors.border.light}`,
@@ -44,8 +46,8 @@ function FAQItem({ question, answer, isOpen, onToggle }: {
           {question}
         </span>
         <motion.span
-          animate={{ rotate: isOpen ? 45 : 0 }}
-          transition={{ duration: 0.2 }}
+          animate={rotateProps.animate}
+          transition={rotateProps.transition}
           style={{
             fontSize: "24px",
             color: colors.brand.teal,
@@ -60,10 +62,10 @@ function FAQItem({ question, answer, isOpen, onToggle }: {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25, ease: "easeOut" }}
+            initial={accordion.expand.initial}
+            animate={accordion.expand.animate}
+            exit={accordion.expand.exit}
+            transition={accordion.expand.transition}
             style={{ overflow: "hidden" }}
           >
             <p style={{

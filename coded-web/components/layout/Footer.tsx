@@ -3,6 +3,7 @@
 import { colors, overlay } from "@/design-system";
 import { fontSize, fontWeight } from "@/design-system/typography";
 import { spacing, radius } from "@/design-system/spacing";
+import { cssTransition } from "@/design-system/motion";
 import { footerSections, socialLinks } from "@/data/navigation";
 
 function SocialIcon({ href, label, iconPath, fill }: {
@@ -18,7 +19,7 @@ function SocialIcon({ href, label, iconPath, fill }: {
       rel="noopener noreferrer"
       style={{
         color: colors.text.bodyDark,
-        transition: "color 0.2s ease",
+        transition: cssTransition.color,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -115,7 +116,7 @@ export default function Footer() {
                           color: colors.text.bodyDark,
                           fontSize: fontSize.small,
                           textDecoration: "none",
-                          transition: "color 0.2s ease",
+                          transition: cssTransition.color,
                         }}
                         onMouseEnter={e => (e.currentTarget.style.color = "white")}
                         onMouseLeave={e => (e.currentTarget.style.color = colors.text.bodyDark)}

@@ -3,6 +3,7 @@
 import { colors, gradients, shadows, overlay } from "@/design-system";
 import { fontSize, fontWeight } from "@/design-system/typography";
 import { radius } from "@/design-system/spacing";
+import { cssTransition } from "@/design-system/motion";
 import { navLinks } from "@/data/navigation";
 
 interface MobileMenuProps {
@@ -63,7 +64,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                 borderRadius: "8px",
                 fontSize: "16px",
                 fontWeight: 500,
-                transition: "background 0.2s ease",
+                transition: cssTransition.background,
               }}
               onMouseEnter={e => (e.currentTarget.style.backgroundColor = overlay.subtleBg)}
               onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}

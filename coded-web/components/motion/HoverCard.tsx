@@ -6,14 +6,17 @@ import { hover } from "@/design-system/motion";
 interface HoverCardProps {
   children: React.ReactNode;
   style?: React.CSSProperties;
+  variant?: "default" | "subtle";
 }
 
-export default function HoverCard({ children, style }: HoverCardProps) {
+export default function HoverCard({ children, style, variant = "default" }: HoverCardProps) {
+  const preset = variant === "subtle" ? hover.cardSubtle : hover.card;
+
   return (
     <motion.div
       style={style}
-      whileHover={hover.card.whileHover}
-      transition={hover.card.transition}
+      whileHover={preset.whileHover}
+      transition={preset.transition}
     >
       {children}
     </motion.div>
