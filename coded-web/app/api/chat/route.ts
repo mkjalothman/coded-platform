@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     let stream;
     try {
       stream = anthropic.messages.stream({
-        model: "claude-sonnet-4-20250514",
+        model: "claude-sonnet-4-6",
         max_tokens: 512,
         system: CHAT_SYSTEM_PROMPT,
         messages: messages.map((m: { role: string; content: string }) => ({
@@ -51,7 +51,8 @@ export async function POST(req: Request) {
           }
           controller.enqueue(encoder.encode("data: [DONE]\n\n"));
           controller.close();
-        } catch {
+        } catch (err) {
+          console.error("[chat] streaming error:", err);
           controller.enqueue(
             encoder.encode(
               `data: ${JSON.stringify({ text: "Sorry, I'm having trouble responding right now. Please try again in a moment." })}\n\n`
