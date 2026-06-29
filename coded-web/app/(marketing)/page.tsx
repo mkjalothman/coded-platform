@@ -9,49 +9,88 @@ import HowItWorks from "@/components/sections/HowItWorks";
 import FAQSection from "@/components/sections/FAQSection";
 import CTASection from "@/components/sections/CTASection";
 import Footer from "@/components/layout/Footer";
-import { createClient } from "@/lib/supabase/server";
 import type { Tables } from "@/lib/supabase/types";
-import { bootcamps as fallbackBootcamps, audiences as fallbackAudiences, stats as fallbackStats, companies as fallbackCompanies } from "@/data/programs";
+import {
+  bootcamps as fallbackBootcamps,
+  audiences as fallbackAudiences,
+  stats as fallbackStats,
+  companies as fallbackCompanies,
+} from "@/data/programs";
 import { testimonials as fallbackTestimonials } from "@/data/testimonials";
 
+async function fetchContent() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!url || !key) {
+    console.warn("[page] Supabase env vars missing — using hardcoded fallback data");
+    return null;
+  }
+
+  try {
+    const { createClient } = await import("@/lib/supabase/server");
+    const supabase = await createClient();
+
+    const [programsRes, audiencesRes, testimonialsRes, companiesRes, statsRes] =
+      await Promise.all([
+        supabase.from("programs").select("*").order("sort"),
+        supabase.from("audiences").select("*").order("sort"),
+        supabase.from("testimonials").select("*").order("sort"),
+        supabase.from("companies").select("*").order("sort"),
+        supabase.from("stats").select("*").order("sort"),
+      ]);
+
+    if (programsRes.error) console.error("[page] programs:", programsRes.error.message);
+    if (audiencesRes.error) console.error("[page] audiences:", audiencesRes.error.message);
+    if (testimonialsRes.error) console.error("[page] testimonials:", testimonialsRes.error.message);
+    if (companiesRes.error) console.error("[page] companies:", companiesRes.error.message);
+    if (statsRes.error) console.error("[page] stats:", statsRes.error.message);
+
+    return { programsRes, audiencesRes, testimonialsRes, companiesRes, statsRes };
+  } catch (err) {
+    console.error("[page] Supabase fetch failed — falling back to hardcoded data:", err);
+    return null;
+  }
+}
+
 export default async function Home() {
-  const supabase = await createClient();
+  const data = await fetchContent();
 
-  const programsRes = await supabase.from("programs").select("*").order("sort");
-  const audiencesRes = await supabase.from("audiences").select("*").order("sort");
-  const testimonialsRes = await supabase.from("testimonials").select("*").order("sort");
-  const companiesRes = await supabase.from("companies").select("*").order("sort");
-  const statsRes = await supabase.from("stats").select("*").order("sort");
+  const programs =
+    (data?.programsRes.data as Tables<"programs">[] | null)?.map((p) => ({
+      title: p.name,
+      color: p.accent_color,
+      desc: p.description,
+      slug: p.slug,
+    })) ?? fallbackBootcamps;
 
-  const programs = (programsRes.data as Tables<"programs">[] | null)?.map(p => ({
-    title: p.name,
-    color: p.accent_color,
-    desc: p.description,
-    slug: p.slug,
-  })) ?? fallbackBootcamps;
+  const audiences =
+    (data?.audiencesRes.data as Tables<"audiences">[] | null)?.map((a) => ({
+      title: a.title,
+      bg: a.bg_color,
+      badge: a.badge,
+      cta: a.cta_label,
+      desc: a.description,
+    })) ?? fallbackAudiences;
 
-  const audiences = (audiencesRes.data as Tables<"audiences">[] | null)?.map(a => ({
-    title: a.title,
-    bg: a.bg_color,
-    badge: a.badge,
-    cta: a.cta_label,
-    desc: a.description,
-  })) ?? fallbackAudiences;
+  const testimonials =
+    (data?.testimonialsRes.data as Tables<"testimonials">[] | null)?.map((t) => ({
+      name: t.name,
+      track: t.program,
+      quote: t.quote,
+      initials: t.initials,
+    })) ?? fallbackTestimonials;
 
-  const testimonials = (testimonialsRes.data as Tables<"testimonials">[] | null)?.map(t => ({
-    name: t.name,
-    track: t.program,
-    quote: t.quote,
-    initials: t.initials,
-  })) ?? fallbackTestimonials;
+  const companies =
+    (data?.companiesRes.data as Tables<"companies">[] | null)?.map((c) => c.name) ??
+    fallbackCompanies;
 
-  const companies = (companiesRes.data as Tables<"companies">[] | null)?.map(c => c.name) ?? fallbackCompanies;
-
-  const stats = (statsRes.data as Tables<"stats">[] | null)?.map(s => ({
-    num: s.value,
-    suffix: s.suffix,
-    label: s.label,
-  })) ?? fallbackStats;
+  const stats =
+    (data?.statsRes.data as Tables<"stats">[] | null)?.map((s) => ({
+      num: s.value,
+      suffix: s.suffix,
+      label: s.label,
+    })) ?? fallbackStats;
 
   return (
     <div style={{ minHeight: "100vh" }}>
