@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import Container from "@/components/ui/Container";
 import SectionHeader from "@/components/ui/SectionHeader";
 import Card from "@/components/ui/Card";
@@ -10,6 +11,7 @@ import StaggerGrid from "@/components/motion/StaggerGrid";
 import { colors } from "@/design-system";
 import { fontSize, fontWeight, lineHeight } from "@/design-system/typography";
 import { spacing } from "@/design-system/spacing";
+import { cssTransition } from "@/design-system/motion";
 import type { Bootcamp } from "@/data/programs";
 
 export default function BootcampGrid({ programs }: { programs: Bootcamp[] }) {
@@ -36,13 +38,18 @@ export default function BootcampGrid({ programs }: { programs: Bootcamp[] }) {
             flexDirection: "column",
             gap: spacing.gap.md,
           }}>
-            <h3 style={{
-              fontSize: fontSize.h3,
-              fontWeight: fontWeight.bold,
-              color: boot.color,
-            }}>
+            <Link
+              href={`/programs/${boot.slug}`}
+              style={{
+                textDecoration: "none",
+                color: boot.color,
+                fontSize: fontSize.h3,
+                fontWeight: fontWeight.bold,
+                transition: cssTransition.color,
+              }}
+            >
               {boot.title}
-            </h3>
+            </Link>
             <p style={{
               color: colors.text.body,
               fontSize: fontSize.body,
@@ -51,17 +58,29 @@ export default function BootcampGrid({ programs }: { programs: Bootcamp[] }) {
             }}>
               {boot.desc}
             </p>
-            <Button
-              variant="track"
-              trackColor={boot.color}
-              style={{ alignSelf: "flex-start" }}
-              onClick={() => {
-                setSelectedProgram(boot);
-                setModalOpen(true);
-              }}
-            >
-              Apply Now
-            </Button>
+            <div style={{ display: "flex", gap: spacing.gap.sm, alignSelf: "flex-start" }}>
+              <Button
+                variant="track"
+                trackColor={boot.color}
+                onClick={() => {
+                  setSelectedProgram(boot);
+                  setModalOpen(true);
+                }}
+              >
+                Apply Now
+              </Button>
+              <Button
+                variant="outline"
+                href={`/programs/${boot.slug}`}
+                style={{
+                  color: colors.text.heading,
+                  borderColor: colors.border.light,
+                  padding: "14px 24px",
+                }}
+              >
+                Learn More
+              </Button>
+            </div>
           </Card>
         ))}
       </StaggerGrid>

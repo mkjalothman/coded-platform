@@ -8,6 +8,7 @@ export const navLinks: NavLink[] = [
   { label: "How It Works", href: "#how-it-works" },
   { label: "Testimonials", href: "#testimonials" },
   { label: "FAQ", href: "#faq" },
+  { label: "About", href: "/about" },
 ];
 
 export interface FooterSection {
@@ -19,18 +20,18 @@ export const footerSections: FooterSection[] = [
   {
     title: "Programs",
     links: [
-      { label: "Cybersecurity", href: "#bootcamps" },
-      { label: "AI App Developer", href: "#bootcamps" },
-      { label: "Agentic AI", href: "#bootcamps" },
-      { label: "AI & Data Science", href: "#bootcamps" },
+      { label: "Cybersecurity", href: "/programs/cybersecurity" },
+      { label: "AI App Developer", href: "/programs/ai-app-developer" },
+      { label: "Agentic AI", href: "/programs/agentic-ai" },
+      { label: "AI & Data Science", href: "/programs/ai-data-science" },
     ],
   },
   {
     title: "Company",
     links: [
+      { label: "About Us", href: "/about" },
       { label: "For Companies", href: "#audience" },
       { label: "Kids & Youth", href: "#audience" },
-      { label: "How It Works", href: "#how-it-works" },
       { label: "FAQ", href: "#faq" },
     ],
   },
