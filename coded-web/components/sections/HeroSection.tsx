@@ -2,6 +2,9 @@
 
 import { motion } from "framer-motion";
 import Button from "@/components/ui/Button";
+import ParticleBackground from "@/components/effects/ParticleBackground";
+import FloatingCode from "@/components/effects/FloatingCode";
+import TypewriterText from "@/components/effects/TypewriterText";
 import { colors, gradients, heroStagger, reveal } from "@/design-system";
 import { fontSize, fontWeight, lineHeight } from "@/design-system/typography";
 import { containerStyle, spacing } from "@/design-system/spacing";
@@ -24,8 +27,11 @@ export default function HeroSection() {
       backgroundImage: gradients.heroGlow,
       paddingTop: spacing.navbarHeight,
       paddingBottom: spacing.navbarHeight,
+      position: "relative" as const,
     }}>
-      <div style={{ ...containerStyle, textAlign: "center" as const, width: "100%" }}>
+      <ParticleBackground />
+      <FloatingCode />
+      <div style={{ ...containerStyle, textAlign: "center" as const, width: "100%", position: "relative" as const, zIndex: 1 }}>
         <motion.p {...fade(heroStagger.delays[0])} style={{
           color: colors.brand.teal,
           fontSize: fontSize.eyebrow,
@@ -52,8 +58,10 @@ export default function HeroSection() {
             marginRight: "auto",
           }}
         >
-          Build Real Tech Skills<br />
-          <span style={{ color: colors.brand.teal }}>Not Just Knowledge</span>
+          <TypewriterText
+            lines={["Build Real Tech Skills", "Not Just Knowledge"]}
+            speed={60}
+          />
         </motion.h1>
 
         <motion.p {...fade(heroStagger.delays[2])} style={{
