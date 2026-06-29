@@ -8,12 +8,13 @@ import TestimonialSection from "@/components/sections/TestimonialSection";
 import CompanyLogos from "@/components/sections/CompanyLogos";
 import StatsBar from "@/components/sections/StatsBar";
 import HowItWorks from "@/components/sections/HowItWorks";
+import FAQSection from "@/components/sections/FAQSection";
 import CTASection from "@/components/sections/CTASection";
 import Footer from "@/components/layout/Footer";
 
 export default function Home() {
   return (
-    <div style={{ minHeight: '100vh' }}>
+    <div style={{ minHeight: "100vh" }}>
       <Navbar />
       <HeroSection />
       <BootcampGrid />
@@ -22,6 +23,7 @@ export default function Home() {
       <CompanyLogos />
       <StatsBar />
       <HowItWorks />
+      <FAQSection />
       <CTASection />
       <Footer />
     </div>

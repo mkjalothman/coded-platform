@@ -3,14 +3,10 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import MobileMenu from "./MobileMenu";
-
-const navLinks = [
-  { label: "Bootcamps", href: "#bootcamps" },
-  { label: "Companies", href: "#companies" },
-  { label: "Kids & Youth", href: "#audience" },
-  { label: "Community", href: "#community" },
-  { label: "About", href: "#about" },
-];
+import Button from "@/components/ui/Button";
+import { colors, shadows } from "@/design-system";
+import { spacing } from "@/design-system/spacing";
+import { navLinks } from "@/data/navigation";
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -25,90 +21,74 @@ export default function Navbar() {
   return (
     <>
       <nav style={{
-        position: 'fixed',
+        position: "fixed",
         top: 0,
         left: 0,
         right: 0,
         zIndex: 50,
-        backgroundColor: scrolled ? 'rgba(13, 20, 54, 0.95)' : '#0d1436',
-        backdropFilter: scrolled ? 'blur(12px)' : 'none',
-        WebkitBackdropFilter: scrolled ? 'blur(12px)' : 'none',
-        borderBottom: scrolled ? '1px solid rgba(30, 45, 107, 0.6)' : '1px solid transparent',
-        boxShadow: scrolled ? '0 4px 20px rgba(0,0,0,0.3)' : 'none',
-        transition: 'all 0.3s ease',
+        backgroundColor: scrolled ? "rgba(13, 20, 54, 0.95)" : colors.surface.dark,
+        backdropFilter: scrolled ? "blur(12px)" : "none",
+        WebkitBackdropFilter: scrolled ? "blur(12px)" : "none",
+        borderBottom: scrolled ? `1px solid ${colors.border.navScrolled}` : "1px solid transparent",
+        boxShadow: scrolled ? shadows.navbarScrolled : "none",
+        transition: "all 0.3s ease",
       }}>
         <div style={{
-          maxWidth: '1152px',
-          margin: '0 auto',
-          padding: '0 40px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          height: '64px',
+          maxWidth: spacing.containerMax,
+          margin: "0 auto",
+          padding: spacing.containerPadding,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          height: spacing.navbarHeight,
         }}>
           <a href="/" style={{
-            border: '2px solid white',
-            padding: '4px 10px',
-            textDecoration: 'none',
-            display: 'inline-flex',
-            alignItems: 'center',
+            border: "2px solid white",
+            padding: "4px 10px",
+            textDecoration: "none",
+            display: "inline-flex",
+            alignItems: "center",
           }}>
-            <span style={{ color: 'white', fontWeight: 700, fontSize: '18px', letterSpacing: '-0.01em' }}>CODED</span>
+            <span style={{ color: "white", fontWeight: 700, fontSize: "18px", letterSpacing: "-0.01em" }}>CODED</span>
           </a>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }} className="hidden md:flex">
+          <div style={{ display: "flex", alignItems: "center", gap: "32px" }} className="hidden md:flex">
             {navLinks.map(link => (
               <a
                 key={link.href}
                 href={link.href}
                 style={{
-                  color: 'rgba(255,255,255,0.7)',
-                  fontSize: '14px',
+                  color: colors.text.navDefault,
+                  fontSize: "14px",
                   fontWeight: 500,
-                  textDecoration: 'none',
-                  transition: 'color 0.2s ease',
-                  letterSpacing: '0.01em',
+                  textDecoration: "none",
+                  transition: "color 0.2s ease",
+                  letterSpacing: "0.01em",
                 }}
-                onMouseEnter={e => (e.currentTarget.style.color = '#00b8a9')}
-                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
+                onMouseEnter={e => (e.currentTarget.style.color = colors.brand.teal)}
+                onMouseLeave={e => (e.currentTarget.style.color = colors.text.navDefault)}
               >
                 {link.label}
               </a>
             ))}
           </div>
 
-          <motion.a
-            href="#apply"
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.97 }}
-            style={{
-              background: 'linear-gradient(135deg, #00b8a9 0%, #00a896 100%)',
-              color: 'white',
-              padding: '10px 24px',
-              borderRadius: '999px',
-              fontWeight: 700,
-              fontSize: '14px',
-              border: 'none',
-              cursor: 'pointer',
-              textDecoration: 'none',
-              boxShadow: '0 4px 16px rgba(0,184,169,0.3)',
-              display: 'inline-flex',
-              alignItems: 'center',
-            }}
-            className="hidden md:inline-flex"
-          >
+          <Button href="#apply" style={{
+            padding: "10px 24px",
+            fontSize: "14px",
+          }} className="hidden md:inline-flex">
             Apply Now
-          </motion.a>
+          </Button>
 
           <button
             onClick={() => setMobileOpen(true)}
             className="md:hidden"
             style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: '8px',
-              color: 'white',
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              padding: "8px",
+              color: "white",
             }}
             aria-label="Open menu"
           >

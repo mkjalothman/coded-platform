@@ -1,38 +1,32 @@
 "use client";
 
+import Container from "@/components/ui/Container";
 import Reveal from "@/components/motion/Reveal";
 import Marquee from "@/components/motion/Marquee";
-
-const companies = ['Zain', 'NBK', 'Boubyan Bank', 'Agility', 'KFAS', 'Floward', 'Markaz', 'Gulf Bank', 'KISR', 'Ooredoo'];
+import { colors, spacing } from "@/design-system";
+import { eyebrowStyle } from "@/design-system/typography";
+import { companies } from "@/data/programs";
 
 export default function CompanyLogos() {
   return (
-    <section id="companies" style={{ backgroundColor: '#f4f5f7', padding: '56px 0' }}>
+    <Container id="companies" bg={colors.surface.light} padding={spacing.sectionYCompact}>
       <Reveal>
-        <p style={{
-          color: '#00b8a9',
-          fontSize: '11px',
-          letterSpacing: '0.15em',
-          fontWeight: 600,
-          textTransform: 'uppercase',
-          marginBottom: '32px',
-          textAlign: 'center',
-        }}>
+        <p style={{ ...eyebrowStyle, marginBottom: "32px" }}>
           Trusted by Leading Companies in Kuwait
         </p>
       </Reveal>
       <Marquee duration={20}>
         {companies.map(c => (
           <span key={c} style={{
-            color: '#9ca3af',
-            fontSize: '18px',
+            color: "#9ca3af",
+            fontSize: "18px",
             fontWeight: 600,
-            whiteSpace: 'nowrap',
+            whiteSpace: "nowrap",
           }}>
             {c}
           </span>
         ))}
       </Marquee>
-    </section>
+    </Container>
   );
 }

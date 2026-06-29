@@ -1,13 +1,23 @@
+import { radius } from "@/design-system/spacing";
+
 interface BadgeProps {
   children: React.ReactNode;
-  className?: string;
+  style?: React.CSSProperties;
 }
 
-export default function Badge({ children, className = "" }: BadgeProps) {
+export default function Badge({ children, style }: BadgeProps) {
   return (
-    <span
-      className={`inline-flex items-center px-3 py-1 text-xs font-medium uppercase tracking-wider rounded-full bg-coded-bg text-coded-muted border border-coded-border ${className}`}
-    >
+    <span style={{
+      backgroundColor: "rgba(255,255,255,0.2)",
+      color: "white",
+      padding: "6px 16px",
+      borderRadius: radius.pill,
+      fontSize: "12px",
+      fontWeight: 600,
+      alignSelf: "flex-start",
+      backdropFilter: "blur(4px)",
+      ...style,
+    }}>
       {children}
     </span>
   );

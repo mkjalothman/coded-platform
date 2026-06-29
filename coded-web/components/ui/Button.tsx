@@ -1,46 +1,102 @@
-import { ButtonHTMLAttributes, forwardRef } from "react";
+"use client";
 
-type ButtonVariant = "primary" | "secondary" | "ghost" | "outline" | "teal" | "navy" | "green" | "purple";
-type ButtonSize = "sm" | "md" | "lg";
+import { motion } from "framer-motion";
+import { gradients, shadows, colors } from "@/design-system";
+import { radius } from "@/design-system/spacing";
+import { hover } from "@/design-system/motion";
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+type ButtonVariant = "primary" | "outline" | "track" | "frosted" | "inverted";
+
+interface ButtonProps {
+  children: React.ReactNode;
   variant?: ButtonVariant;
-  size?: ButtonSize;
+  trackColor?: string;
+  href?: string;
+  onClick?: () => void;
+  style?: React.CSSProperties;
+  className?: string;
 }
 
-const variantClasses: Record<ButtonVariant, string> = {
-  primary: "bg-coded-navy text-white hover:bg-coded-navy/90",
-  secondary: "bg-coded-surface text-coded-text hover:bg-coded-bg border border-coded-border",
-  ghost: "text-coded-muted hover:text-coded-text hover:bg-coded-bg",
-  outline: "border border-coded-border text-coded-text hover:bg-coded-bg",
-  teal: "bg-coded-teal text-white hover:bg-coded-teal/90",
-  navy: "bg-coded-navy text-white hover:bg-coded-navy/90",
-  green: "bg-coded-green text-white hover:bg-coded-green/90",
-  purple: "bg-coded-purple text-white hover:bg-coded-purple/90",
+const baseStyle: React.CSSProperties = {
+  borderRadius: radius.pill,
+  fontWeight: 700,
+  fontSize: "15px",
+  border: "none",
+  cursor: "pointer",
+  display: "inline-flex",
+  alignItems: "center",
+  gap: "8px",
+  textDecoration: "none",
+  transition: "all 0.2s ease",
 };
 
-const sizeClasses: Record<ButtonSize, string> = {
-  sm: "px-4 py-2 text-sm",
-  md: "px-6 py-2.5 text-sm",
-  lg: "px-8 py-3 text-base",
+const variants: Record<ButtonVariant, (trackColor?: string) => React.CSSProperties> = {
+  primary: () => ({
+    ...baseStyle,
+    background: gradients.primaryCta,
+    color: "white",
+    padding: "14px 32px",
+    boxShadow: shadows.primaryButton,
+  }),
+  outline: () => ({
+    ...baseStyle,
+    background: "transparent",
+    color: "white",
+    padding: "14px 32px",
+    border: "1.5px solid rgba(255,255,255,0.3)",
+    fontWeight: 600,
+  }),
+  track: (trackColor) => ({
+    ...baseStyle,
+    background: gradients.trackButton(trackColor || colors.brand.teal),
+    color: "white",
+    padding: "14px 32px",
+    boxShadow: shadows.trackButton(trackColor || colors.brand.teal),
+  }),
+  frosted: () => ({
+    ...baseStyle,
+    backgroundColor: "rgba(255,255,255,0.15)",
+    color: "white",
+    padding: "12px 28px",
+    fontSize: "14px",
+    border: "1.5px solid rgba(255,255,255,0.2)",
+    backdropFilter: "blur(4px)",
+  }),
+  inverted: () => ({
+    ...baseStyle,
+    backgroundColor: "white",
+    color: colors.brand.tealDark,
+    padding: "16px 48px",
+    fontWeight: 800,
+    fontSize: "16px",
+    boxShadow: shadows.ctaButton,
+  }),
 };
 
-const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  (
-    { variant = "primary", size = "md", className = "", children, ...props },
-    ref
-  ) => {
+export default function Button({
+  children,
+  variant = "primary",
+  trackColor,
+  href,
+  onClick,
+  style: extraStyle,
+  className,
+}: ButtonProps) {
+  const variantStyle = variants[variant](trackColor);
+  const combined = { ...variantStyle, ...extraStyle };
+  const hoverPreset = variant === "inverted" ? hover.buttonScaleLarge : hover.buttonScale;
+
+  if (href) {
     return (
-      <button
-        ref={ref}
-        className={`inline-flex items-center justify-center font-medium rounded-[8px] transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
-        {...props}
-      >
+      <motion.a href={href} style={combined} className={className} {...hoverPreset}>
         {children}
-      </button>
+      </motion.a>
     );
   }
-);
 
-Button.displayName = "Button";
-export default Button;
+  return (
+    <motion.button onClick={onClick} style={combined} className={className} {...hoverPreset}>
+      {children}
+    </motion.button>
+  );
+}
