@@ -23,6 +23,7 @@ export const spacing = {
 
 export const containerStyle: React.CSSProperties = {
   maxWidth: spacing.containerMax,
+  width: "100%",
   margin: "0 auto",
   padding: spacing.containerPadding,
 };
@@ -30,6 +31,7 @@ export const containerStyle: React.CSSProperties = {
 export const sectionStyle = (bg: string, padding: string = spacing.sectionY): React.CSSProperties => ({
   backgroundColor: bg,
   padding: `${padding} 0`,
+  width: "100%",
 });
 
 export const radius = {
