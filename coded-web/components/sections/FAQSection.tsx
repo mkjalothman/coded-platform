@@ -8,7 +8,7 @@ import Reveal from "@/components/motion/Reveal";
 import { colors, accordion } from "@/design-system";
 import { fontSize, fontWeight, lineHeight } from "@/design-system/typography";
 import { spacing } from "@/design-system/spacing";
-import { faqs } from "@/data/programs";
+import type { FAQ } from "@/data/programs";
 
 function FAQItem({ question, answer, isOpen, onToggle }: {
   question: string;
@@ -84,7 +84,7 @@ function FAQItem({ question, answer, isOpen, onToggle }: {
   );
 }
 
-export default function FAQSection() {
+export default function FAQSection({ faqs }: { faqs: FAQ[] }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (

@@ -6,9 +6,9 @@ import Card from "@/components/ui/Card";
 import StaggerGrid from "@/components/motion/StaggerGrid";
 import { colors } from "@/design-system";
 import { fontSize, fontWeight, lineHeight } from "@/design-system/typography";
-import { steps } from "@/data/programs";
+import type { Step } from "@/data/programs";
 
-export default function HowItWorks() {
+export default function HowItWorks({ steps }: { steps: Step[] }) {
   return (
     <Container bg={colors.surface.light}>
       <SectionHeader eyebrow="HOW IT WORKS" heading="How CODED actually teaches" />
