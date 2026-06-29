@@ -6,9 +6,9 @@ import Card from "@/components/ui/Card";
 import StaggerGrid from "@/components/motion/StaggerGrid";
 import { colors, gradients } from "@/design-system";
 import { fontSize, fontWeight, lineHeight } from "@/design-system/typography";
-import { testimonials } from "@/data/testimonials";
+import type { Testimonial } from "@/data/testimonials";
 
-export default function TestimonialSection() {
+export default function TestimonialSection({ testimonials }: { testimonials: Testimonial[] }) {
   return (
     <Container bg={colors.surface.dark}>
       <SectionHeader eyebrow="TESTIMONIALS" heading="What our graduates say" headingColor="white" />

@@ -20,11 +20,12 @@ export default function AnimatedCounter({
 }: AnimatedCounterProps) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-40px" });
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(target);
 
   useEffect(() => {
     if (!inView) return;
 
+    setCount(0);
     let start = 0;
     const startTime = performance.now();
     const durationMs = duration * 1000;
