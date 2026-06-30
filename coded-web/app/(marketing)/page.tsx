@@ -1,7 +1,6 @@
 import Navbar from "@/components/layout/Navbar";
 import HeroSection from "@/components/sections/HeroSection";
-import BootcampGrid from "@/components/sections/BootcampGrid";
-import AudienceSection from "@/components/sections/AudienceSection";
+import ProgramWorlds from "@/components/sections/ProgramWorlds";
 import TestimonialSection from "@/components/sections/TestimonialSection";
 import CompanyLogos from "@/components/sections/CompanyLogos";
 import StatsBar from "@/components/sections/StatsBar";
@@ -11,8 +10,6 @@ import CTASection from "@/components/sections/CTASection";
 import Footer from "@/components/layout/Footer";
 import type { Tables } from "@/lib/supabase/types";
 import {
-  bootcamps as fallbackBootcamps,
-  audiences as fallbackAudiences,
   stats as fallbackStats,
   companies as fallbackCompanies,
   steps as fallbackSteps,
@@ -33,10 +30,9 @@ async function fetchContent() {
     const { createClient } = await import("@/lib/supabase/server");
     const supabase = await createClient();
 
-    const [programsRes, audiencesRes, testimonialsRes, companiesRes, statsRes, faqsRes, stepsRes] =
+    const [programsRes, testimonialsRes, companiesRes, statsRes, faqsRes, stepsRes] =
       await Promise.all([
         supabase.from("programs").select("*").order("sort"),
-        supabase.from("audiences").select("*").order("sort"),
         supabase.from("testimonials").select("*").order("sort"),
         supabase.from("companies").select("*").order("sort"),
         supabase.from("stats").select("*").order("sort"),
@@ -45,14 +41,13 @@ async function fetchContent() {
       ]);
 
     if (programsRes.error) console.error("[page] programs:", programsRes.error.message);
-    if (audiencesRes.error) console.error("[page] audiences:", audiencesRes.error.message);
     if (testimonialsRes.error) console.error("[page] testimonials:", testimonialsRes.error.message);
     if (companiesRes.error) console.error("[page] companies:", companiesRes.error.message);
     if (statsRes.error) console.error("[page] stats:", statsRes.error.message);
     if (faqsRes.error) console.error("[page] faqs:", faqsRes.error.message);
     if (stepsRes.error) console.error("[page] steps:", stepsRes.error.message);
 
-    return { programsRes, audiencesRes, testimonialsRes, companiesRes, statsRes, faqsRes, stepsRes };
+    return { programsRes, testimonialsRes, companiesRes, statsRes, faqsRes, stepsRes };
   } catch (err) {
     console.error("[page] Supabase fetch failed — falling back to hardcoded data:", err);
     return null;
@@ -64,20 +59,14 @@ export default async function Home() {
 
   const programs =
     (data?.programsRes.data as Tables<"programs">[] | null)?.map((p) => ({
-      title: p.name,
-      color: p.accent_color,
-      desc: p.description,
       slug: p.slug,
-    })) ?? fallbackBootcamps;
-
-  const audiences =
-    (data?.audiencesRes.data as Tables<"audiences">[] | null)?.map((a) => ({
-      title: a.title,
-      bg: a.bg_color,
-      badge: a.badge,
-      cta: a.cta_label,
-      desc: a.description,
-    })) ?? fallbackAudiences;
+      name: p.name,
+      description: p.description,
+      color: p.accent_color,
+      category: p.category,
+      price: p.price,
+      duration: p.duration,
+    })) ?? [];
 
   const testimonials =
     (data?.testimonialsRes.data as Tables<"testimonials">[] | null)?.map((t) => ({
@@ -115,8 +104,7 @@ export default async function Home() {
     <div style={{ minHeight: "100vh" }}>
       <Navbar />
       <HeroSection />
-      <BootcampGrid programs={programs} />
-      <AudienceSection audiences={audiences} />
+      <ProgramWorlds programs={programs} />
       <TestimonialSection testimonials={testimonials} />
       <CompanyLogos companies={companies} />
       <StatsBar stats={stats} />
