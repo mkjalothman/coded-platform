@@ -89,57 +89,20 @@ function matchProgram(answers: Record<string, string>): (typeof programData)[0] 
 
 function TypingDots() {
   return (
-    <div style={{ display: "flex", gap: "4px", justifyContent: "center", padding: "16px 0" }}>
+    <div style={{ display: "flex", gap: "5px", justifyContent: "center", padding: "20px 0" }}>
       {[0, 1, 2].map((i) => (
         <motion.div
           key={i}
           style={{
-            width: "6px",
-            height: "6px",
+            width: "5px",
+            height: "5px",
             borderRadius: "50%",
             backgroundColor: "#00b8a9",
           }}
-          animate={{ opacity: [0.3, 1, 0.3], scale: [0.8, 1, 0.8] }}
-          transition={{ duration: 1, repeat: Infinity, delay: i * 0.2, ease: "easeInOut" }}
+          animate={{ opacity: [0.25, 1, 0.25], y: [0, -4, 0] }}
+          transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.15, ease: "easeInOut" }}
         />
       ))}
-    </div>
-  );
-}
-
-function CompletedPills({ step, answers }: { step: number; answers: Record<string, string> }) {
-  const completed = questions.slice(0, step - 1);
-  if (completed.length === 0) return null;
-
-  return (
-    <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "20px" }}>
-      {completed.map((q) => {
-        const selectedOption = q.options.find((o) => o.value === answers[q.id]);
-        return (
-          <motion.div
-            key={q.id}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "5px",
-              backgroundColor: "rgba(0,184,169,0.08)",
-              border: "1px solid rgba(0,184,169,0.2)",
-              borderRadius: "999px",
-              padding: "4px 10px",
-              fontSize: "11px",
-              color: "#00b8a9",
-              fontWeight: 500,
-            }}
-          >
-            <svg width="10" height="10" viewBox="0 0 10 10">
-              <path d="M2 5.5L4 7.5L8 3" stroke="#00b8a9" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            {selectedOption?.label}
-          </motion.div>
-        );
-      })}
     </div>
   );
 }
@@ -147,7 +110,6 @@ function CompletedPills({ step, answers }: { step: number; answers: Record<strin
 export default function NeuralOrbLauncher() {
   const [isOpen, setIsOpen] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [showQuestion, setShowQuestion] = useState(false);
 
@@ -173,7 +135,7 @@ export default function NeuralOrbLauncher() {
   useEffect(() => {
     if (step >= 1 && step <= questions.length) {
       setShowQuestion(false);
-      const timer = setTimeout(() => setShowQuestion(true), prefersReducedMotion ? 0 : 600);
+      const timer = setTimeout(() => setShowQuestion(true), prefersReducedMotion ? 0 : 550);
       return () => clearTimeout(timer);
     }
     setShowQuestion(true);
@@ -239,10 +201,10 @@ export default function NeuralOrbLauncher() {
   const motionProps = useMemo(() => {
     if (prefersReducedMotion) return { initial: false as const, animate: {}, exit: {} };
     return {
-      initial: { opacity: 0, x: 30 },
-      animate: { opacity: 1, x: 0 },
-      exit: { opacity: 0, x: -20 },
-      transition: { type: "spring" as const, stiffness: 300, damping: 30 },
+      initial: { opacity: 0, y: 12 },
+      animate: { opacity: 1, y: 0 },
+      exit: { opacity: 0, y: -8 },
+      transition: { duration: 0.3, ease: "easeOut" as const },
     };
   }, [prefersReducedMotion]);
 
@@ -258,30 +220,31 @@ export default function NeuralOrbLauncher() {
           display: "flex",
           flexDirection: "column",
           alignItems: "flex-end",
-          gap: "12px",
+          gap: "10px",
         }}
       >
         {/* Tooltip */}
         <AnimatePresence>
           {showTooltip && !isOpen && (
             <motion.div
-              initial={prefersReducedMotion ? false : { opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 8 }}
-              transition={{ duration: 0.4 }}
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 6, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 6, scale: 0.95 }}
+              transition={{ duration: 0.35 }}
               style={{
-                backgroundColor: "rgba(13,20,54,0.9)",
-                backdropFilter: "blur(12px)",
-                WebkitBackdropFilter: "blur(12px)",
+                backgroundColor: "rgba(13,20,54,0.92)",
+                backdropFilter: "blur(16px)",
+                WebkitBackdropFilter: "blur(16px)",
                 color: "#ccd6f6",
-                padding: "10px 16px",
-                borderRadius: "12px",
-                fontSize: "13px",
+                padding: "8px 14px",
+                borderRadius: "10px",
+                fontSize: "12px",
                 fontWeight: 500,
-                boxShadow: "0 4px 24px rgba(0,0,0,0.4), 0 0 8px rgba(0,184,169,0.06)",
-                border: "1px solid rgba(0,184,169,0.15)",
+                boxShadow: "0 4px 20px rgba(0,0,0,0.35)",
+                border: "1px solid rgba(0,184,169,0.12)",
                 whiteSpace: "nowrap",
                 pointerEvents: "none",
+                letterSpacing: "0.01em",
               }}
             >
               Need help choosing? 🤖
@@ -289,53 +252,43 @@ export default function NeuralOrbLauncher() {
           )}
         </AnimatePresence>
 
-        {/* Orb button — 48px, single concentric ring */}
+        {/* </> glyph button */}
         <motion.button
           onClick={toggleOpen}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
           aria-label={isOpen ? "Close program advisor" : "Open program advisor"}
-          whileHover={prefersReducedMotion ? {} : { scale: 1.08 }}
-          whileTap={prefersReducedMotion ? {} : { scale: 0.95 }}
+          whileHover={prefersReducedMotion ? {} : { scale: 1.06 }}
+          whileTap={prefersReducedMotion ? {} : { scale: 0.94 }}
+          className="ft-launcher"
           style={{
             width: "48px",
             height: "48px",
             borderRadius: "50%",
-            border: "none",
+            border: "1px solid rgba(0,184,169,0.2)",
             cursor: "pointer",
             position: "relative",
-            background: "transparent",
+            background: "rgba(13,20,54,0.85)",
+            backdropFilter: "blur(12px)",
+            WebkitBackdropFilter: "blur(12px)",
             padding: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            boxShadow: "0 0 20px rgba(0,184,169,0.15), 0 4px 16px rgba(0,0,0,0.3)",
+            transition: "box-shadow 0.3s ease, border-color 0.3s ease",
           }}
         >
-          <svg width="48" height="48" viewBox="0 0 48 48" style={{ position: "absolute", top: 0, left: 0 }}>
-            <defs>
-              <radialGradient id="ngOrbGrad" cx="38%" cy="35%" r="55%">
-                <stop offset="0%" stopColor="#00d4c1" />
-                <stop offset="60%" stopColor="#00b8a9" />
-                <stop offset="100%" stopColor="#0a1030" />
-              </radialGradient>
-              <filter id="ngGlow">
-                <feGaussianBlur stdDeviation={isHovered ? "4" : "2.5"} />
-              </filter>
-            </defs>
-            {/* Glow layer */}
-            <circle cx="24" cy="24" r="11" fill="#00b8a9" opacity="0.3" filter="url(#ngGlow)" />
-            {/* Concentric ring */}
-            <circle
-              cx="24"
-              cy="24"
-              r="21"
-              fill="none"
-              stroke="rgba(0,184,169,0.12)"
-              strokeWidth="0.75"
-              className="ng-ring"
-            />
-            {/* Core orb */}
-            <circle cx="24" cy="24" r="11" fill="url(#ngOrbGrad)" />
-            {/* Highlight */}
-            <circle cx="21" cy="21" r="3" fill="rgba(255,255,255,0.1)" />
-          </svg>
+          <span
+            style={{
+              color: "#00b8a9",
+              fontSize: "16px",
+              fontWeight: 700,
+              fontFamily: "var(--font-mono, ui-monospace, monospace)",
+              lineHeight: 1,
+              letterSpacing: "-0.5px",
+            }}
+          >
+            &lt;/&gt;
+          </span>
         </motion.button>
       </div>
 
@@ -343,16 +296,16 @@ export default function NeuralOrbLauncher() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="ng-backdrop"
+            className="ft-backdrop"
             onClick={toggleOpen}
             initial={prefersReducedMotion ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
+            transition={{ duration: 0.2 }}
             style={{
               position: "fixed",
               inset: 0,
-              backgroundColor: "rgba(0,0,0,0.6)",
+              backgroundColor: "rgba(0,0,0,0.55)",
               zIndex: 9997,
             }}
           />
@@ -363,100 +316,94 @@ export default function NeuralOrbLauncher() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="ng-panel"
-            initial={prefersReducedMotion ? false : { opacity: 0, y: 30, scale: 0.92 }}
+            className="ft-panel"
+            initial={prefersReducedMotion ? false : { opacity: 0, y: 24, scale: 0.94 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 400, damping: 35 }}
+            exit={{ opacity: 0, y: 16, scale: 0.96 }}
+            transition={{ type: "spring", stiffness: 420, damping: 36 }}
             style={{
               position: "fixed",
               bottom: "88px",
               right: "24px",
-              width: "388px",
+              width: "380px",
               maxHeight: "min(540px, calc(100vh - 120px))",
-              background: "rgba(13,20,54,0.88)",
-              backdropFilter: "blur(24px)",
-              WebkitBackdropFilter: "blur(24px)",
-              borderRadius: "20px",
-              border: "1px solid rgba(0,184,169,0.15)",
-              boxShadow: "0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(0,184,169,0.06), inset 0 1px 0 rgba(255,255,255,0.03)",
+              background: "rgba(13,20,54,0.85)",
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+              borderRadius: "18px",
+              border: "1px solid",
+              borderImage: "linear-gradient(135deg, rgba(30,45,107,0.6), rgba(0,184,169,0.25)) 1",
+              boxShadow: "0 16px 56px rgba(0,0,0,0.45), 0 0 32px rgba(0,184,169,0.05), inset 0 1px 0 rgba(255,255,255,0.03)",
               zIndex: 9998,
               display: "flex",
               flexDirection: "column",
               overflow: "hidden",
             }}
           >
-            {/* Animated border glow — conic gradient overlay */}
-            <div
-              className="ng-border-glow"
-              style={{
-                position: "absolute",
-                inset: "-1px",
-                borderRadius: "21px",
-                padding: "1px",
-                pointerEvents: "none",
-                zIndex: 0,
-              }}
-            />
-
             {/* Header */}
             <div
               style={{
-                padding: "18px 20px",
-                borderBottom: "1px solid rgba(0,184,169,0.08)",
+                padding: "16px 18px",
+                borderBottom: "1px solid rgba(30,45,107,0.4)",
                 display: "flex",
                 alignItems: "center",
-                gap: "12px",
+                gap: "10px",
                 flexShrink: 0,
-                position: "relative",
-                zIndex: 1,
               }}
             >
+              {/* Mini terminal icon */}
               <div
                 style={{
-                  width: "28px",
-                  height: "28px",
-                  borderRadius: "50%",
-                  background: "linear-gradient(135deg, rgba(0,184,169,0.2), rgba(13,20,54,0.6))",
-                  border: "1px solid rgba(0,184,169,0.25)",
+                  width: "26px",
+                  height: "26px",
+                  borderRadius: "6px",
+                  background: "rgba(0,184,169,0.06)",
+                  border: "1px solid rgba(0,184,169,0.15)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   flexShrink: 0,
                 }}
               >
-                <svg width="12" height="12" viewBox="0 0 12 12">
-                  <circle cx="6" cy="6" r="3" fill="none" stroke="#00b8a9" strokeWidth="1" opacity="0.8" />
-                  <circle cx="6" cy="6" r="1.5" fill="#00b8a9" opacity="0.6" />
-                </svg>
+                <span
+                  style={{
+                    color: "#00b8a9",
+                    fontSize: "10px",
+                    fontWeight: 700,
+                    fontFamily: "var(--font-mono, ui-monospace, monospace)",
+                    opacity: 0.8,
+                  }}
+                >
+                  &gt;_
+                </span>
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ color: "#e6f1ff", fontSize: "13px", fontWeight: 600, letterSpacing: "0.01em" }}>
+                <div style={{ color: "#e6f1ff", fontSize: "13px", fontWeight: 600 }}>
                   Find Your Path
                 </div>
-                <div style={{ color: "#5a6a8a", fontSize: "10px", fontWeight: 500, letterSpacing: "0.03em" }}>
-                  AI-POWERED ADVISOR
+                <div style={{ color: "#4a5568", fontSize: "10px", fontWeight: 500, letterSpacing: "0.04em" }}>
+                  AI ADVISOR
                 </div>
               </div>
               <button
                 onClick={toggleOpen}
                 aria-label="Close panel"
-                className="ng-close-btn"
+                className="ft-close-btn"
                 style={{
-                  width: "26px",
-                  height: "26px",
-                  borderRadius: "8px",
-                  border: "1px solid rgba(0,184,169,0.1)",
-                  backgroundColor: "rgba(0,184,169,0.04)",
-                  color: "#5a6a8a",
+                  width: "24px",
+                  height: "24px",
+                  borderRadius: "6px",
+                  border: "1px solid rgba(30,45,107,0.4)",
+                  backgroundColor: "transparent",
+                  color: "#4a5568",
                   cursor: "pointer",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  fontSize: "13px",
+                  fontSize: "12px",
                   lineHeight: 1,
                   flexShrink: 0,
-                  transition: "all 0.2s ease",
+                  transition: "all 0.15s ease",
                 }}
               >
                 ✕
@@ -466,11 +413,9 @@ export default function NeuralOrbLauncher() {
             {/* Body */}
             <div
               style={{
-                padding: "24px 22px",
+                padding: "24px 20px",
                 overflowY: "auto",
                 flex: 1,
-                position: "relative",
-                zIndex: 1,
               }}
             >
               <AnimatePresence mode="wait">
@@ -479,52 +424,54 @@ export default function NeuralOrbLauncher() {
                   <motion.div key="intro" {...motionProps} style={{ textAlign: "center" }}>
                     <div
                       style={{
-                        width: "52px",
-                        height: "52px",
-                        borderRadius: "50%",
-                        background: "radial-gradient(circle, rgba(0,184,169,0.1) 0%, transparent 70%)",
-                        border: "1px solid rgba(0,184,169,0.12)",
+                        width: "48px",
+                        height: "48px",
+                        borderRadius: "10px",
+                        background: "rgba(0,184,169,0.05)",
+                        border: "1px solid rgba(0,184,169,0.1)",
                         margin: "0 auto 24px",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
                       }}
                     >
-                      <svg width="20" height="20" viewBox="0 0 20 20">
-                        <circle cx="10" cy="10" r="5" fill="none" stroke="#00b8a9" strokeWidth="1" opacity="0.6" />
-                        {[0, 72, 144, 216, 288].map((a) => {
-                          const rad = (a * Math.PI) / 180;
-                          return (
-                            <circle key={a} cx={10 + Math.cos(rad) * 8} cy={10 + Math.sin(rad) * 8} r="1.2" fill="rgba(0,184,169,0.35)" />
-                          );
-                        })}
-                      </svg>
+                      <span
+                        style={{
+                          color: "#00b8a9",
+                          fontSize: "18px",
+                          fontFamily: "var(--font-mono, ui-monospace, monospace)",
+                          fontWeight: 600,
+                          opacity: 0.7,
+                        }}
+                      >
+                        ?
+                      </span>
                     </div>
-                    <h3 style={{ color: "#e6f1ff", fontSize: "18px", fontWeight: 700, marginBottom: "10px", letterSpacing: "-0.01em" }}>
+                    <h3 style={{ color: "#e6f1ff", fontSize: "17px", fontWeight: 700, marginBottom: "10px", letterSpacing: "-0.01em" }}>
                       Not sure where to start?
                     </h3>
-                    <p style={{ color: "#5a6a8a", fontSize: "13px", lineHeight: 1.7, marginBottom: "28px", maxWidth: "280px", margin: "0 auto 28px" }}>
-                      Answer 3 quick questions and I&apos;ll recommend the perfect CODED program for you.
+                    <p style={{ color: "#4a5568", fontSize: "13px", lineHeight: 1.7, marginBottom: "28px", maxWidth: "260px", margin: "0 auto 28px" }}>
+                      3 quick questions. I&apos;ll match you to the right CODED program.
                     </p>
                     <motion.button
                       onClick={() => setStep(1)}
-                      whileHover={prefersReducedMotion ? {} : { scale: 1.02, boxShadow: "0 6px 28px rgba(0,184,169,0.35)" }}
-                      whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
+                      whileHover={prefersReducedMotion ? {} : { scale: 1.015, boxShadow: "0 6px 24px rgba(0,184,169,0.3)" }}
+                      whileTap={prefersReducedMotion ? {} : { scale: 0.985 }}
                       style={{
-                        background: "linear-gradient(135deg, #00b8a9, #00a896)",
+                        background: "linear-gradient(135deg, #00b8a9, #00a08e)",
                         color: "white",
-                        padding: "13px 28px",
-                        borderRadius: "999px",
+                        padding: "12px 24px",
+                        borderRadius: "10px",
                         fontWeight: 600,
                         fontSize: "13px",
                         border: "none",
                         cursor: "pointer",
-                        boxShadow: "0 4px 20px rgba(0,184,169,0.25)",
+                        boxShadow: "0 4px 16px rgba(0,184,169,0.2)",
                         width: "100%",
                         letterSpacing: "0.02em",
                       }}
                     >
-                      Let&apos;s go →
+                      Start →
                     </motion.button>
                   </motion.div>
                 )}
@@ -532,37 +479,31 @@ export default function NeuralOrbLauncher() {
                 {/* Steps 1-3: Questions */}
                 {step >= 1 && step <= questions.length && (
                   <motion.div key={`q-${step}`} {...motionProps}>
-                    <CompletedPills step={step} answers={answers} />
-
                     {!showQuestion ? (
                       <TypingDots />
                     ) : (
                       <>
-                        <p
-                          style={{
-                            color: "#5a6a8a",
-                            fontSize: "10px",
-                            marginBottom: "6px",
-                            fontWeight: 600,
-                            textTransform: "uppercase",
-                            letterSpacing: "0.1em",
-                            textAlign: "center",
-                          }}
-                        >
-                          {step} of {questions.length}
+                        {/* Progress bar */}
+                        <div style={{ display: "flex", gap: "4px", marginBottom: "24px" }}>
+                          {questions.map((_, i) => (
+                            <div
+                              key={i}
+                              style={{
+                                height: "2px",
+                                flex: 1,
+                                borderRadius: "999px",
+                                backgroundColor: i < step ? "#00b8a9" : "rgba(30,45,107,0.5)",
+                                transition: "background-color 0.4s ease",
+                              }}
+                            />
+                          ))}
+                        </div>
+
+                        <p style={{ color: "#4a5568", fontSize: "10px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "6px", textAlign: "center" }}>
+                          Question {step} of {questions.length}
                         </p>
 
-                        <h3
-                          style={{
-                            fontSize: "17px",
-                            fontWeight: 700,
-                            color: "#e6f1ff",
-                            marginBottom: "22px",
-                            textAlign: "center",
-                            lineHeight: 1.35,
-                            letterSpacing: "-0.01em",
-                          }}
-                        >
+                        <h3 style={{ fontSize: "16px", fontWeight: 700, color: "#e6f1ff", marginBottom: "22px", textAlign: "center", lineHeight: 1.4 }}>
                           {questions[step - 1].question}
                         </h3>
 
@@ -570,24 +511,24 @@ export default function NeuralOrbLauncher() {
                           {questions[step - 1].options.map((option, i) => (
                             <motion.button
                               key={option.value}
-                              initial={prefersReducedMotion ? false : { opacity: 0, x: 16 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: i * 0.06, type: "spring", stiffness: 400, damping: 30 }}
+                              initial={prefersReducedMotion ? false : { opacity: 0, y: 8 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: i * 0.05, duration: 0.25 }}
                               onClick={() => handleAnswer(questions[step - 1].id, option.value)}
-                              className="ng-option-btn"
-                              whileHover={prefersReducedMotion ? {} : { y: -1, boxShadow: "0 4px 16px rgba(0,184,169,0.12)" }}
+                              className="ft-pill-btn"
+                              whileHover={prefersReducedMotion ? {} : { y: -2, boxShadow: "0 4px 12px rgba(0,184,169,0.1)" }}
                               whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
                               style={{
-                                backgroundColor: "rgba(17,29,74,0.6)",
-                                border: "1px solid rgba(30,45,107,0.5)",
-                                borderRadius: "12px",
-                                padding: "14px 16px",
+                                backgroundColor: "rgba(17,29,74,0.4)",
+                                border: "1px solid rgba(30,45,107,0.45)",
+                                borderRadius: "999px",
+                                padding: "12px 18px",
                                 color: "#ccd6f6",
                                 fontSize: "13px",
                                 fontWeight: 500,
                                 cursor: "pointer",
-                                textAlign: "left",
-                                lineHeight: 1.4,
+                                textAlign: "center",
+                                lineHeight: 1.3,
                                 transition: "border-color 0.2s ease, background-color 0.2s ease",
                               }}
                             >
@@ -602,12 +543,10 @@ export default function NeuralOrbLauncher() {
 
                 {/* Step 4: Loading */}
                 {step === 4 && (
-                  <motion.div key="loading" {...motionProps} style={{ textAlign: "center", padding: "36px 0" }}>
-                    <div style={{ marginBottom: "20px" }}>
-                      <TypingDots />
-                    </div>
-                    <p style={{ color: "#5a6a8a", fontSize: "13px", fontWeight: 500 }}>
-                      Analyzing your answers...
+                  <motion.div key="loading" {...motionProps} style={{ textAlign: "center", padding: "40px 0" }}>
+                    <TypingDots />
+                    <p style={{ color: "#4a5568", fontSize: "12px", fontWeight: 500, marginTop: "8px" }}>
+                      Analyzing...
                     </p>
                   </motion.div>
                 )}
@@ -615,85 +554,70 @@ export default function NeuralOrbLauncher() {
                 {/* Step 5: Result */}
                 {step === 5 && result && (
                   <motion.div key="result" {...motionProps}>
-                    <p
-                      style={{
-                        color: "#00b8a9",
-                        fontSize: "10px",
-                        letterSpacing: "0.15em",
-                        fontWeight: 600,
-                        marginBottom: "16px",
-                        textTransform: "uppercase",
-                        textAlign: "center",
-                      }}
-                    >
-                      YOUR PERFECT MATCH
+                    <p style={{ color: "#00b8a9", fontSize: "10px", letterSpacing: "0.14em", fontWeight: 600, marginBottom: "16px", textTransform: "uppercase", textAlign: "center" }}>
+                      Your match
                     </p>
 
                     <motion.div
-                      initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}
+                      initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.15, type: "spring", stiffness: 300, damping: 30 }}
+                      transition={{ delay: 0.12, duration: 0.35 }}
                       style={{
-                        backgroundColor: "rgba(17,29,74,0.5)",
-                        border: "1px solid rgba(0,184,169,0.12)",
-                        borderRadius: "16px",
+                        backgroundColor: "rgba(17,29,74,0.45)",
+                        border: "1px solid rgba(30,45,107,0.4)",
+                        borderRadius: "14px",
                         overflow: "hidden",
+                        display: "flex",
                         marginBottom: "12px",
                       }}
                     >
-                      {/* Gradient header stripe */}
+                      {/* Left accent bar */}
                       <div
                         style={{
-                          height: "4px",
-                          background: `linear-gradient(90deg, ${result.color}, ${result.color}88, ${result.color})`,
+                          width: "4px",
+                          flexShrink: 0,
+                          background: `linear-gradient(180deg, ${result.color}, ${result.color}66)`,
+                          borderRadius: "4px 0 0 4px",
                         }}
                       />
 
-                      <div style={{ padding: "20px" }}>
+                      <div style={{ padding: "18px 16px", flex: 1 }}>
                         <div
                           style={{
                             display: "inline-block",
                             backgroundColor: "rgba(0,184,169,0.08)",
                             color: "#00b8a9",
-                            padding: "3px 10px",
-                            borderRadius: "999px",
+                            padding: "2px 8px",
+                            borderRadius: "4px",
                             fontSize: "9px",
                             fontWeight: 700,
-                            marginBottom: "14px",
+                            marginBottom: "12px",
                             letterSpacing: "0.1em",
                             textTransform: "uppercase",
+                            fontFamily: "var(--font-mono, ui-monospace, monospace)",
                           }}
                         >
-                          RECOMMENDED
+                          recommended
                         </div>
 
-                        <h3 style={{ fontSize: "20px", fontWeight: 700, color: "#e6f1ff", marginBottom: "8px", letterSpacing: "-0.01em" }}>
+                        <h3 style={{ fontSize: "19px", fontWeight: 700, color: "#e6f1ff", marginBottom: "8px", letterSpacing: "-0.01em" }}>
                           {result.title}
                         </h3>
 
-                        <p style={{ color: "#5a6a8a", fontSize: "12px", lineHeight: 1.6, marginBottom: "18px", fontStyle: "italic" }}>
+                        <p style={{ color: "#4a5568", fontSize: "12px", lineHeight: 1.65, marginBottom: "16px", fontStyle: "italic" }}>
                           &ldquo;{aiExplanation}&rdquo;
                         </p>
 
-                        <div
-                          style={{
-                            display: "grid",
-                            gridTemplateColumns: "1fr 1fr",
-                            gap: "14px",
-                            marginBottom: "20px",
-                            padding: "14px",
-                            backgroundColor: "rgba(0,0,0,0.15)",
-                            borderRadius: "10px",
-                          }}
-                        >
+                        {/* Stats — two rows, minimal */}
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px 16px", marginBottom: "18px" }}>
                           {[
                             { label: "Duration", value: result.duration },
                             { label: "Price", value: result.price },
                             { label: "Next cohort", value: result.nextCohort },
-                            { label: "Seats left", value: `${result.seats} remaining` },
+                            { label: "Seats", value: `${result.seats} left` },
                           ].map((item) => (
                             <div key={item.label}>
-                              <div style={{ color: "#5a6a8a", fontSize: "9px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "3px" }}>
+                              <div style={{ color: "#4a5568", fontSize: "9px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "2px" }}>
                                 {item.label}
                               </div>
                               <div style={{ color: "#ccd6f6", fontSize: "12px", fontWeight: 600 }}>
@@ -706,17 +630,17 @@ export default function NeuralOrbLauncher() {
                         <div style={{ display: "flex", gap: "8px" }}>
                           <motion.a
                             href={`/programs/${result.slug}`}
-                            whileHover={prefersReducedMotion ? {} : { scale: 1.02, boxShadow: `0 6px 24px ${result.color}44` }}
-                            whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
+                            whileHover={prefersReducedMotion ? {} : { scale: 1.015 }}
+                            whileTap={prefersReducedMotion ? {} : { scale: 0.985 }}
                             style={{
-                              background: `linear-gradient(135deg, ${result.color}, ${result.color}cc)`,
+                              background: `linear-gradient(135deg, ${result.color}, ${result.color}bb)`,
                               color: "white",
-                              padding: "11px 20px",
-                              borderRadius: "999px",
+                              padding: "10px 18px",
+                              borderRadius: "8px",
                               fontWeight: 600,
                               fontSize: "12px",
                               textDecoration: "none",
-                              boxShadow: `0 4px 16px ${result.color}33`,
+                              boxShadow: `0 4px 14px ${result.color}30`,
                               flex: 1,
                               textAlign: "center",
                               letterSpacing: "0.02em",
@@ -726,21 +650,21 @@ export default function NeuralOrbLauncher() {
                           </motion.a>
                           <motion.button
                             onClick={reset}
-                            whileHover={prefersReducedMotion ? {} : { borderColor: "rgba(0,184,169,0.3)" }}
+                            whileHover={prefersReducedMotion ? {} : { borderColor: "rgba(0,184,169,0.25)" }}
                             style={{
                               backgroundColor: "transparent",
-                              color: "#5a6a8a",
-                              padding: "11px 14px",
-                              borderRadius: "999px",
+                              color: "#4a5568",
+                              padding: "10px 12px",
+                              borderRadius: "8px",
                               fontWeight: 500,
                               fontSize: "12px",
-                              border: "1px solid rgba(30,45,107,0.5)",
+                              border: "1px solid rgba(30,45,107,0.4)",
                               cursor: "pointer",
                               whiteSpace: "nowrap",
                               transition: "all 0.2s ease",
                             }}
                           >
-                            Restart
+                            Retry
                           </motion.button>
                         </div>
                       </div>
@@ -754,63 +678,30 @@ export default function NeuralOrbLauncher() {
       </AnimatePresence>
 
       <style>{`
-        @keyframes ngRingPulse {
-          0%, 100% { opacity: 0.12; transform: scale(1); }
-          50% { opacity: 0.06; transform: scale(1.06); }
+        .ft-launcher:hover {
+          box-shadow: 0 0 28px rgba(0,184,169,0.25), 0 4px 20px rgba(0,0,0,0.35) !important;
+          border-color: rgba(0,184,169,0.35) !important;
         }
-        @keyframes ngBorderRotate {
-          from { --ng-angle: 0deg; }
-          to { --ng-angle: 360deg; }
-        }
-        .ng-ring {
-          transform-origin: center;
-          animation: ngRingPulse 3s ease-in-out infinite;
-        }
-        .ng-close-btn:hover {
-          border-color: rgba(0,184,169,0.3) !important;
+        .ft-close-btn:hover {
+          border-color: rgba(0,184,169,0.25) !important;
           color: #00b8a9 !important;
-          background-color: rgba(0,184,169,0.08) !important;
         }
-        .ng-option-btn:hover {
+        .ft-pill-btn:hover {
           border-color: rgba(0,184,169,0.3) !important;
-          background-color: rgba(0,184,169,0.06) !important;
-        }
-        .ng-border-glow {
-          background: conic-gradient(
-            from var(--ng-angle, 0deg),
-            transparent 0%,
-            rgba(0,184,169,0.15) 25%,
-            transparent 50%,
-            rgba(30,45,107,0.3) 75%,
-            transparent 100%
-          );
-          -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-          mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-          -webkit-mask-composite: xor;
-          mask-composite: exclude;
-          animation: ngBorderRotate 8s linear infinite;
-        }
-        @property --ng-angle {
-          syntax: "<angle>";
-          initial-value: 0deg;
-          inherits: false;
+          background-color: rgba(0,184,169,0.05) !important;
         }
         @media (min-width: 641px) {
-          .ng-backdrop { display: none !important; }
+          .ft-backdrop { display: none !important; }
         }
         @media (max-width: 640px) {
-          .ng-panel {
+          .ft-panel {
             bottom: 0 !important;
             right: 0 !important;
             left: 0 !important;
             width: 100% !important;
             max-height: 70vh !important;
-            border-radius: 20px 20px 0 0 !important;
+            border-radius: 18px 18px 0 0 !important;
           }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .ng-ring { animation: none; }
-          .ng-border-glow { animation: none; }
         }
       `}</style>
     </>
