@@ -50,7 +50,7 @@ function FAQItem({ question, answer, isOpen, onToggle }: {
           transition={rotateProps.transition}
           style={{
             fontSize: "24px",
-            color: colors.brand.teal,
+            color: "var(--theme-accent)",
             fontWeight: fontWeight.bold,
             flexShrink: 0,
             lineHeight: 1,

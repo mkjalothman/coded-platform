@@ -58,7 +58,7 @@ function SocialIcon({ href, label, iconPath, fill }: {
 
 export default function Footer() {
   return (
-    <footer style={{ backgroundColor: colors.surface.dark }}>
+    <footer className="theme-transition" style={{ backgroundColor: "var(--theme-bg)" }}>
       <div style={{
         maxWidth: spacing.containerMax,
         margin: "0 auto",

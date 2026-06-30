@@ -30,7 +30,7 @@ export const lineHeight = {
 } as const;
 
 export const eyebrowStyle: React.CSSProperties = {
-  color: colors.brand.teal,
+  color: "var(--theme-accent)",
   fontSize: fontSize.eyebrow,
   letterSpacing: "0.15em",
   fontWeight: fontWeight.semibold,

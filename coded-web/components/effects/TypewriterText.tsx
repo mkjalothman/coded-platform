@@ -42,7 +42,7 @@ export default function TypewriterText({ lines, speed = 50 }: Props) {
   return (
     <>
       <span style={{ display: "block" }}>{displayedLines[0]}</span>
-      <span style={{ color: "#00b8a9", display: "block" }}>
+      <span style={{ color: "var(--theme-accent)", display: "block" }}>
         {displayedLines[1]}
         {!done && (
           <span
@@ -50,7 +50,7 @@ export default function TypewriterText({ lines, speed = 50 }: Props) {
               display: "inline-block",
               width: "3px",
               height: "0.85em",
-              backgroundColor: "#00b8a9",
+              backgroundColor: "var(--theme-accent)",
               marginLeft: "4px",
               verticalAlign: "middle",
               animation: "blink 1s steps(1) infinite",

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import NeuralOrbLauncher from "@/components/widgets/NeuralOrbLauncher";
+import { ThemeProvider } from "@/components/providers/ThemeContext";
+import LenisProvider from "@/components/providers/LenisProvider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -20,10 +22,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} h-full antialiased`}>
+    <html lang="en" className={`${inter.variable} h-full antialiased`} data-theme="bootcamp">
       <body className="min-h-full flex flex-col">
-        {children}
-        <NeuralOrbLauncher />
+        <ThemeProvider>
+          <LenisProvider>
+            {children}
+            <NeuralOrbLauncher />
+          </LenisProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

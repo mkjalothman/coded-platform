@@ -10,7 +10,7 @@ import type { Stat } from "@/data/programs";
 
 export default function StatsBar({ stats }: { stats: Stat[] }) {
   return (
-    <Container bg={colors.surface.dark}>
+    <Container bg="var(--theme-bg)" style={{ transition: "background-color 0.5s ease" }}>
       <Reveal>
         <div style={{
           display: "grid",
@@ -27,7 +27,7 @@ export default function StatsBar({ stats }: { stats: Stat[] }) {
                 style={{
                   fontSize: fontSize.stat,
                   fontWeight: fontWeight.black,
-                  color: colors.brand.teal,
+                  color: "var(--theme-accent)",
                   lineHeight: lineHeight.stat,
                   display: "block",
                 }}

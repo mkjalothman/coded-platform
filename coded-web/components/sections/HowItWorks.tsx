@@ -20,7 +20,7 @@ export default function HowItWorks({ steps }: { steps: Step[] }) {
         {steps.map(h => (
           <Card key={h.num} style={{ padding: "32px" }}>
             <div style={{
-              color: colors.brand.teal,
+              color: "var(--theme-accent)",
               fontSize: fontSize.eyebrow,
               fontWeight: fontWeight.bold,
               marginBottom: "16px",

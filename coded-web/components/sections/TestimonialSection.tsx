@@ -10,7 +10,7 @@ import type { Testimonial } from "@/data/testimonials";
 
 export default function TestimonialSection({ testimonials }: { testimonials: Testimonial[] }) {
   return (
-    <Container id="testimonials" bg={colors.surface.dark}>
+    <Container id="testimonials" bg="var(--theme-bg-lifted)" style={{ transition: "background-color 0.5s ease" }}>
       <SectionHeader eyebrow="TESTIMONIALS" heading="What our graduates say" headingColor="white" />
       <StaggerGrid style={{
         display: "grid",

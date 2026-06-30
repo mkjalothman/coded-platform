@@ -5,6 +5,7 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { colors, spring, easing } from "@/design-system";
 import ApplyModal from "@/components/ui/ApplyModal";
+import { useTheme } from "@/components/providers/ThemeContext";
 
 /* ─── Types ─── */
 
@@ -362,6 +363,12 @@ export default function ProgramWorlds({ programs }: { programs: WorldProgram[] }
   const [modalOpen, setModalOpen] = useState(false);
   const [modalProgram, setModalProgram] = useState<{ slug: string; name: string } | null>(null);
   const reducedMotion = useReducedMotion();
+  const { setTheme } = useTheme();
+
+  const handleCategoryChange = useCallback((id: CatId) => {
+    setActive(id);
+    setTheme(id);
+  }, [setTheme]);
 
   const allPrograms = programs.length > 0 ? programs : FALLBACK;
 
@@ -381,8 +388,9 @@ export default function ProgramWorlds({ programs }: { programs: WorldProgram[] }
   return (
     <section
       id="programs"
+      className="theme-transition"
       style={{
-        backgroundColor: colors.brand.navyDeep,
+        backgroundColor: "var(--theme-bg)",
         position: "relative",
         overflow: "hidden",
         padding: "96px 0",
@@ -396,7 +404,7 @@ export default function ProgramWorlds({ programs }: { programs: WorldProgram[] }
         {/* Header */}
         <div style={{ textAlign: "center", marginBottom: 16 }}>
           <p style={{
-            color: colors.brand.teal,
+            color: "var(--theme-accent)",
             fontSize: 11,
             letterSpacing: "0.15em",
             fontWeight: 600,
@@ -417,7 +425,7 @@ export default function ProgramWorlds({ programs }: { programs: WorldProgram[] }
         </div>
 
         {/* Category selector */}
-        <CategorySelector active={active} onChange={setActive} />
+        <CategorySelector active={active} onChange={handleCategoryChange} />
 
         {/* World headline — animated */}
         <AnimatePresence mode="wait">

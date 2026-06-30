@@ -55,7 +55,7 @@ export default function FloatingCode() {
             left: el.x + "%",
             top: el.y + "%",
             fontSize: el.size + "px",
-            color: "#00b8a9",
+            color: "var(--theme-accent)",
             opacity: el.opacity,
             fontFamily: "monospace",
             fontWeight: 600,
