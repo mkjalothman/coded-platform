@@ -41,7 +41,7 @@ export default function Navbar() {
         left: 0,
         right: 0,
         zIndex: 50,
-        backgroundColor: scrolled ? "rgba(13, 20, 54, 0.95)" : colors.surface.dark,
+        backgroundColor: scrolled ? "rgba(20, 36, 63, 0.92)" : "transparent",
         backdropFilter: scrolled ? "blur(12px)" : "none",
         WebkitBackdropFilter: scrolled ? "blur(12px)" : "none",
         borderBottom: scrolled ? `1px solid ${colors.border.navScrolled}` : "1px solid transparent",

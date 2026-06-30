@@ -1,17 +1,90 @@
 "use client";
 
-import { useRef, useCallback, useState } from "react";
+import { useRef, useCallback, useState, useEffect } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import Button from "@/components/ui/Button";
-import ParticleBackground from "@/components/effects/ParticleBackground";
 import FloatingCode from "@/components/effects/FloatingCode";
-import TypewriterText from "@/components/effects/TypewriterText";
-import { heroStagger, reveal } from "@/design-system";
-import { fontSize, fontWeight, lineHeight } from "@/design-system/typography";
+import { heroStagger, reveal, easing } from "@/design-system";
+import { fontWeight, lineHeight } from "@/design-system/typography";
 import { containerStyle, spacing } from "@/design-system/spacing";
 
+function KineticHeadline() {
+  const line1 = "Build Real Tech Skills";
+  const line2 = "Not Just Knowledge";
+  const reduced = useReducedMotion();
+
+  if (reduced) {
+    return (
+      <>
+        <span style={{ display: "block" }}>{line1}</span>
+        <span style={{ display: "block", color: "var(--theme-accent)" }}>{line2}</span>
+      </>
+    );
+  }
+
+  const charVariants = {
+    hidden: { opacity: 0, y: 20, filter: "blur(4px)" },
+    visible: (i: number) => ({
+      opacity: 1,
+      y: 0,
+      filter: "blur(0px)",
+      transition: {
+        delay: 0.4 + i * 0.03,
+        duration: 0.5,
+        ease: easing.apple,
+      },
+    }),
+  };
+
+  return (
+    <>
+      <span style={{ display: "block" }}>
+        {line1.split("").map((ch, i) => (
+          <motion.span
+            key={`l1-${i}`}
+            custom={i}
+            variants={charVariants}
+            initial="hidden"
+            animate="visible"
+            style={{ display: "inline-block", whiteSpace: ch === " " ? "pre" : undefined }}
+          >
+            {ch}
+          </motion.span>
+        ))}
+      </span>
+      <span style={{ display: "block", color: "var(--theme-accent)" }}>
+        {line2.split("").map((ch, i) => (
+          <motion.span
+            key={`l2-${i}`}
+            custom={line1.length + i}
+            variants={charVariants}
+            initial="hidden"
+            animate="visible"
+            style={{ display: "inline-block", whiteSpace: ch === " " ? "pre" : undefined }}
+          >
+            {ch}
+          </motion.span>
+        ))}
+        <motion.span
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 2, duration: 0.3 }}
+          style={{
+            display: "inline-block",
+            width: "4px",
+            height: "0.8em",
+            backgroundColor: "var(--theme-accent)",
+            marginLeft: "6px",
+            verticalAlign: "middle",
+            animation: "blink 1s steps(1) infinite",
+          }}
+        />
+      </span>
+    </>
+  );
+}
+
 export default function HeroSection() {
-  const sectionRef = useRef<HTMLElement>(null);
   const [glowPos, setGlowPos] = useState({ x: 50, y: 50 });
   const reducedMotion = useReducedMotion();
 
@@ -32,11 +105,9 @@ export default function HeroSection() {
 
   return (
     <section
-      ref={sectionRef}
       onMouseMove={handleMouseMove}
-      className="theme-transition"
+      className="section-transparent"
       style={{
-        backgroundColor: "var(--theme-bg)",
         minHeight: "100vh",
         display: "flex",
         flexDirection: "column" as const,
@@ -54,7 +125,7 @@ export default function HeroSection() {
           position: "absolute",
           inset: 0,
           pointerEvents: "none",
-          background: `radial-gradient(600px circle at ${glowPos.x}% ${glowPos.y}%, var(--theme-accent-glow), transparent 60%)`,
+          background: `radial-gradient(700px circle at ${glowPos.x}% ${glowPos.y}%, var(--theme-accent-glow), transparent 60%)`,
           transition: reducedMotion ? "none" : "background 0.15s ease-out",
           zIndex: 0,
         }}
@@ -70,13 +141,12 @@ export default function HeroSection() {
         }}
       />
 
-      <ParticleBackground />
       <FloatingCode />
       <div style={{ ...containerStyle, textAlign: "center" as const, width: "100%", position: "relative" as const, zIndex: 1 }}>
         <motion.p {...fade(heroStagger.delays[0])} style={{
           color: "var(--theme-accent)",
-          fontSize: fontSize.eyebrow,
-          letterSpacing: "0.15em",
+          fontSize: "11px",
+          letterSpacing: "0.2em",
           fontWeight: fontWeight.semibold,
           textTransform: "uppercase" as const,
           marginBottom: spacing.gap.lg,
@@ -84,12 +154,9 @@ export default function HeroSection() {
           1st Coding Academy in the Arab World — Est 2015
         </motion.p>
 
-        <motion.h1
-          initial={reveal.fadeUp.initial}
-          animate={reveal.fadeUp.visible}
-          transition={heroStagger.transition(heroStagger.delays[1])}
+        <h1
           style={{
-            fontSize: fontSize.hero,
+            fontSize: "var(--font-size-hero)",
             lineHeight: lineHeight.tight,
             fontWeight: fontWeight.black,
             color: "var(--theme-text)",
@@ -99,14 +166,11 @@ export default function HeroSection() {
             marginRight: "auto",
           }}
         >
-          <TypewriterText
-            lines={["Build Real Tech Skills", "Not Just Knowledge"]}
-            speed={60}
-          />
-        </motion.h1>
+          <KineticHeadline />
+        </h1>
 
         <motion.p {...fade(heroStagger.delays[2])} style={{
-          fontSize: fontSize.subtitle,
+          fontSize: "18px",
           color: "var(--theme-text-muted)",
           lineHeight: lineHeight.relaxed,
           margin: "0 auto",
@@ -124,7 +188,7 @@ export default function HeroSection() {
           gap: spacing.gap.md,
           flexWrap: "wrap" as const,
         }}>
-          <Button href="#bootcamps">Explore Bootcamps <span>→</span></Button>
+          <Button href="#programs">Explore Programs <span>→</span></Button>
           <Button variant="outline" href="#companies">CODED For Companies →</Button>
         </motion.div>
       </div>

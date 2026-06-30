@@ -2,11 +2,11 @@
 
 @theme inline {
   --color-coded-bg: #f4f5f7;
-  --color-coded-bg-dark: #0d1436;
+  --color-coded-bg-dark: #14243f;
   --color-coded-surface: #ffffff;
-  --color-coded-surface-dark: #111d4a;
+  --color-coded-surface-dark: #1a2d52;
   --color-coded-border: #e5e7eb;
-  --color-coded-border-dark: #1e2d6b;
+  --color-coded-border-dark: #1e3a6e;
 
   --color-coded-text: #0a0f2e;
   --color-coded-text-light: #ffffff;
@@ -14,7 +14,7 @@
   --color-coded-muted-dark: #8892b0;
 
   --color-coded-teal: #00b8a9;
-  --color-coded-navy: #1a2570;
+  --color-coded-navy: #14243f;
   --color-coded-green: #2d6a4f;
   --color-coded-purple: #9b59b6;
 
@@ -38,9 +38,8 @@
   --line-height-normal: 1.6;
   --line-height-relaxed: 1.75;
 
-  /* Theme-morphing tokens — default is Adults/Bootcamp */
-  --theme-bg: #0d1436;
-  --theme-bg-lifted: #111d4a;
+  --theme-bg: #14243f;
+  --theme-bg-lifted: #1a2d52;
   --theme-surface: rgba(255,255,255,0.03);
   --theme-accent: #00b8a9;
   --theme-accent-soft: rgba(0,184,169,0.12);
@@ -58,8 +57,8 @@
 }
 
 [data-theme="kids"] {
-  --theme-bg: #121938;
-  --theme-bg-lifted: #1a2248;
+  --theme-bg: #182040;
+  --theme-bg-lifted: #1f2a50;
   --theme-surface: rgba(255,255,255,0.04);
   --theme-accent: #ef4444;
   --theme-accent-soft: rgba(239,68,68,0.12);
@@ -77,8 +76,8 @@
 }
 
 [data-theme="youth"] {
-  --theme-bg: #0c1230;
-  --theme-bg-lifted: #111a42;
+  --theme-bg: #121e3a;
+  --theme-bg-lifted: #182848;
   --theme-surface: rgba(255,255,255,0.03);
   --theme-accent: #3b82f6;
   --theme-accent-soft: rgba(59,130,246,0.12);
@@ -96,8 +95,8 @@
 }
 
 [data-theme="enterprise"] {
-  --theme-bg: #0e1333;
-  --theme-bg-lifted: #141a45;
+  --theme-bg: #141e3b;
+  --theme-bg-lifted: #1a284d;
   --theme-surface: rgba(255,255,255,0.025);
   --theme-accent: #6366f1;
   --theme-accent-soft: rgba(99,102,241,0.10);
@@ -119,7 +118,7 @@ html {
   transition: background-color 0.5s ease;
 }
 body {
-  background-color: var(--color-coded-bg);
+  background-color: var(--theme-bg);
   color: var(--color-coded-text);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
@@ -140,6 +139,70 @@ body {
 ::selection {
   background-color: var(--theme-accent);
   color: #ffffff;
+}
+
+/* ─── Cinematic section surfaces ─── */
+
+.section-glass {
+  position: relative;
+  z-index: 1;
+  background: rgba(20, 36, 63, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.section-glass-light {
+  position: relative;
+  z-index: 1;
+  background: rgba(20, 36, 63, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.section-transparent {
+  position: relative;
+  z-index: 1;
+  background: transparent;
+}
+
+/* ─── Narrative divider ─── */
+
+.narrative-divider {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 48px 24px;
+  pointer-events: none;
+}
+
+.narrative-divider span {
+  display: inline-block;
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--theme-accent);
+  font-weight: 600;
+  opacity: 0.7;
+  position: relative;
+}
+
+.narrative-divider span::before,
+.narrative-divider span::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--theme-accent), transparent);
+  opacity: 0.3;
+}
+
+.narrative-divider span::before {
+  right: calc(100% + 16px);
+}
+
+.narrative-divider span::after {
+  left: calc(100% + 16px);
 }
 
 @keyframes float {
@@ -169,5 +232,10 @@ html.lenis, html.lenis body {
 @media (prefers-reduced-motion: reduce) {
   .theme-transition {
     transition: none !important;
+  }
+  .section-glass,
+  .section-glass-light {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 }

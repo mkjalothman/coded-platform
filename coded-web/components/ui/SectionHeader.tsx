@@ -15,7 +15,7 @@ export default function SectionHeader({
   eyebrow,
   heading,
   subtitle,
-  headingColor = colors.text.heading,
+  headingColor = "var(--theme-text)",
   subtitleDelay = 0.1,
 }: SectionHeaderProps) {
   return (

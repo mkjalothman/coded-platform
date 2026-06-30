@@ -2,9 +2,9 @@ export const colors = {
   brand: {
     teal: "#00b8a9",
     tealDark: "#00a896",
-    navy: "#0a0f2e",
-    navyDeep: "#0d1436",
-    navyMid: "#1a2570",
+    navy: "#14243f",
+    navyDeep: "#14243f",
+    navyMid: "#1a2d52",
   },
 
   track: {
@@ -23,8 +23,8 @@ export const colors = {
   surface: {
     light: "#f4f5f7",
     white: "#ffffff",
-    dark: "#0d1436",
-    darkCard: "#111d4a",
+    dark: "#14243f",
+    darkCard: "#1a2d52",
   },
 
   text: {
@@ -43,8 +43,8 @@ export const colors = {
   border: {
     light: "#e5e7eb",
     cardSubtle: "rgba(0,0,0,0.04)",
-    dark: "#1e2d6b",
-    navScrolled: "rgba(30,45,107,0.6)",
+    dark: "#1e3a6e",
+    navScrolled: "rgba(30,58,110,0.6)",
   },
 } as const;
 

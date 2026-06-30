@@ -101,14 +101,24 @@ export default async function Home() {
     })) ?? fallbackSteps;
 
   return (
-    <div style={{ minHeight: "100vh" }}>
+    <div style={{ minHeight: "100vh", position: "relative", zIndex: 1 }}>
       <Navbar />
       <HeroSection />
+
+      <div className="narrative-divider"><span>Discover Your Path</span></div>
       <ProgramWorlds programs={programs} />
+
+      <div className="narrative-divider"><span>Hear From Graduates</span></div>
       <TestimonialSection testimonials={testimonials} />
+
       <CompanyLogos companies={companies} />
+
+      <div className="narrative-divider"><span>The Numbers Speak</span></div>
       <StatsBar stats={stats} />
+
+      <div className="narrative-divider"><span>How It Works</span></div>
       <HowItWorks steps={stepList} />
+
       <FAQSection faqs={faqList} />
       <CTASection />
       <Footer />

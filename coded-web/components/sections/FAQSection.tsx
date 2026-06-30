@@ -4,8 +4,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Container from "@/components/ui/Container";
 import SectionHeader from "@/components/ui/SectionHeader";
-import Reveal from "@/components/motion/Reveal";
-import { colors, accordion } from "@/design-system";
+import ScrollReveal from "@/components/motion/ScrollReveal";
+import { accordion } from "@/design-system";
 import { fontSize, fontWeight, lineHeight } from "@/design-system/typography";
 import { spacing } from "@/design-system/spacing";
 import type { FAQ } from "@/data/programs";
@@ -20,7 +20,7 @@ function FAQItem({ question, answer, isOpen, onToggle }: {
 
   return (
     <div style={{
-      borderBottom: `1px solid ${colors.border.light}`,
+      borderBottom: "1px solid rgba(255,255,255,0.08)",
     }}>
       <button
         onClick={onToggle}
@@ -40,7 +40,7 @@ function FAQItem({ question, answer, isOpen, onToggle }: {
         <span style={{
           fontSize: fontSize.subtitle,
           fontWeight: fontWeight.semibold,
-          color: colors.text.heading,
+          color: "var(--theme-text)",
           lineHeight: 1.4,
         }}>
           {question}
@@ -69,7 +69,7 @@ function FAQItem({ question, answer, isOpen, onToggle }: {
             style={{ overflow: "hidden" }}
           >
             <p style={{
-              color: colors.text.body,
+              color: "var(--theme-text-muted)",
               fontSize: fontSize.body,
               lineHeight: lineHeight.relaxed,
               paddingBottom: spacing.gap.lg,
@@ -88,9 +88,20 @@ export default function FAQSection({ faqs }: { faqs: FAQ[] }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <Container id="faq" bg={colors.surface.white}>
-      <SectionHeader eyebrow="FAQ" heading="Frequently Asked Questions" />
-      <Reveal>
+    <Container
+      id="faq"
+      bg="rgba(20, 36, 63, 0.7)"
+      style={{
+        position: "relative",
+        zIndex: 1,
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+      } as React.CSSProperties}
+    >
+      <ScrollReveal>
+        <SectionHeader eyebrow="FAQ" heading="Frequently Asked Questions" headingColor="white" />
+      </ScrollReveal>
+      <ScrollReveal delay={0.15}>
         <div style={{ maxWidth: "768px", margin: "0 auto" }}>
           {faqs.map((faq, i) => (
             <FAQItem
@@ -102,7 +113,7 @@ export default function FAQSection({ faqs }: { faqs: FAQ[] }) {
             />
           ))}
         </div>
-      </Reveal>
+      </ScrollReveal>
     </Container>
   );
 }

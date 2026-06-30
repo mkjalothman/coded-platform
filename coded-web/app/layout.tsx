@@ -4,6 +4,7 @@ import "./globals.css";
 import NeuralOrbLauncher from "@/components/widgets/NeuralOrbLauncher";
 import { ThemeProvider } from "@/components/providers/ThemeContext";
 import LenisProvider from "@/components/providers/LenisProvider";
+import GlobalNetwork from "@/components/effects/GlobalNetwork";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -26,6 +27,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <ThemeProvider>
           <LenisProvider>
+            <GlobalNetwork />
             {children}
             <NeuralOrbLauncher />
           </LenisProvider>

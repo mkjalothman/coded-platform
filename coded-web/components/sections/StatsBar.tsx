@@ -1,25 +1,24 @@
 "use client";
 
 import Container from "@/components/ui/Container";
-import Reveal from "@/components/motion/Reveal";
+import ScrollReveal from "@/components/motion/ScrollReveal";
 import AnimatedCounter from "@/components/motion/AnimatedCounter";
-import { colors } from "@/design-system";
 import { fontSize, fontWeight, lineHeight } from "@/design-system/typography";
 import { spacing } from "@/design-system/spacing";
 import type { Stat } from "@/data/programs";
 
 export default function StatsBar({ stats }: { stats: Stat[] }) {
   return (
-    <Container bg="var(--theme-bg)" style={{ transition: "background-color 0.5s ease" }}>
-      <Reveal>
+    <Container bg="transparent" style={{ position: "relative", zIndex: 1 }}>
+      <ScrollReveal>
         <div style={{
           display: "grid",
           gridTemplateColumns: "repeat(4, 1fr)",
           gap: spacing.gap.xxl,
           textAlign: "center",
         }} className="stats-grid">
-          {stats.map(s => (
-            <div key={s.label}>
+          {stats.map((s, i) => (
+            <ScrollReveal key={s.label} delay={i * 0.1} direction="scale">
               <AnimatedCounter
                 target={s.num}
                 suffix={s.suffix}
@@ -33,7 +32,7 @@ export default function StatsBar({ stats }: { stats: Stat[] }) {
                 }}
               />
               <div style={{
-                color: colors.text.onDarkMuted,
+                color: "var(--theme-text-muted)",
                 fontSize: fontSize.body,
                 marginTop: spacing.gap.sm,
                 fontWeight: fontWeight.medium,
@@ -41,10 +40,10 @@ export default function StatsBar({ stats }: { stats: Stat[] }) {
               }}>
                 {s.label}
               </div>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
-      </Reveal>
+      </ScrollReveal>
 
       <style>{`
         @media (max-width: 768px) {

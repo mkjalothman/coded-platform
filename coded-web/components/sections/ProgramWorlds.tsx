@@ -388,9 +388,8 @@ export default function ProgramWorlds({ programs }: { programs: WorldProgram[] }
   return (
     <section
       id="programs"
-      className="theme-transition"
+      className="section-transparent"
       style={{
-        backgroundColor: "var(--theme-bg)",
         position: "relative",
         overflow: "hidden",
         padding: "96px 0",
