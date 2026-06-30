@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const questions = [
   {
@@ -86,11 +87,69 @@ function matchProgram(answers: Record<string, string>): (typeof programData)[0] 
   return programData[0];
 }
 
+function TypingDots() {
+  return (
+    <div style={{ display: "flex", gap: "4px", justifyContent: "center", padding: "16px 0" }}>
+      {[0, 1, 2].map((i) => (
+        <motion.div
+          key={i}
+          style={{
+            width: "6px",
+            height: "6px",
+            borderRadius: "50%",
+            backgroundColor: "#00b8a9",
+          }}
+          animate={{ opacity: [0.3, 1, 0.3], scale: [0.8, 1, 0.8] }}
+          transition={{ duration: 1, repeat: Infinity, delay: i * 0.2, ease: "easeInOut" }}
+        />
+      ))}
+    </div>
+  );
+}
+
+function CompletedPills({ step, answers }: { step: number; answers: Record<string, string> }) {
+  const completed = questions.slice(0, step - 1);
+  if (completed.length === 0) return null;
+
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "20px" }}>
+      {completed.map((q) => {
+        const selectedOption = q.options.find((o) => o.value === answers[q.id]);
+        return (
+          <motion.div
+            key={q.id}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "5px",
+              backgroundColor: "rgba(0,184,169,0.08)",
+              border: "1px solid rgba(0,184,169,0.2)",
+              borderRadius: "999px",
+              padding: "4px 10px",
+              fontSize: "11px",
+              color: "#00b8a9",
+              fontWeight: 500,
+            }}
+          >
+            <svg width="10" height="10" viewBox="0 0 10 10">
+              <path d="M2 5.5L4 7.5L8 3" stroke="#00b8a9" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            {selectedOption?.label}
+          </motion.div>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function NeuralOrbLauncher() {
   const [isOpen, setIsOpen] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [showQuestion, setShowQuestion] = useState(false);
 
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -110,6 +169,15 @@ export default function NeuralOrbLauncher() {
     const timer = setTimeout(() => setShowTooltip(true), 4000);
     return () => clearTimeout(timer);
   }, [isOpen]);
+
+  useEffect(() => {
+    if (step >= 1 && step <= questions.length) {
+      setShowQuestion(false);
+      const timer = setTimeout(() => setShowQuestion(true), prefersReducedMotion ? 0 : 600);
+      return () => clearTimeout(timer);
+    }
+    setShowQuestion(true);
+  }, [step, prefersReducedMotion]);
 
   const handleAnswer = useCallback(
     async (questionId: string, value: string) => {
@@ -160,6 +228,7 @@ export default function NeuralOrbLauncher() {
     setAnswers({});
     setResult(null);
     setAiExplanation("");
+    setShowQuestion(true);
   };
 
   const toggleOpen = () => {
@@ -167,12 +236,19 @@ export default function NeuralOrbLauncher() {
     setShowTooltip(false);
   };
 
-  const animDuration = prefersReducedMotion ? "0s" : "3s";
-  const pulseAnimation = prefersReducedMotion ? "none" : "orbPulse 3s ease-in-out infinite";
-  const lineAnimation = prefersReducedMotion ? "none" : "orbLineFloat 4s ease-in-out infinite";
+  const motionProps = useMemo(() => {
+    if (prefersReducedMotion) return { initial: false as const, animate: {}, exit: {} };
+    return {
+      initial: { opacity: 0, x: 30 },
+      animate: { opacity: 1, x: 0 },
+      exit: { opacity: 0, x: -20 },
+      transition: { type: "spring" as const, stiffness: 300, damping: 30 },
+    };
+  }, [prefersReducedMotion]);
 
   return (
     <>
+      {/* Launcher */}
       <div
         style={{
           position: "fixed",
@@ -186,621 +262,555 @@ export default function NeuralOrbLauncher() {
         }}
       >
         {/* Tooltip */}
-        {showTooltip && !isOpen && (
-          <div
-            style={{
-              backgroundColor: "#111d4a",
-              color: "#ccd6f6",
-              padding: "10px 16px",
-              borderRadius: "12px",
-              fontSize: "13px",
-              fontWeight: 500,
-              boxShadow: "0 4px 20px rgba(0,0,0,0.4)",
-              border: "1px solid #1e2d6b",
-              animation: prefersReducedMotion ? "none" : "tooltipFadeIn 0.5s ease forwards",
-              opacity: prefersReducedMotion ? 1 : 0,
-              whiteSpace: "nowrap",
-              pointerEvents: "none",
-            }}
-          >
-            Need help choosing? 🤖
-          </div>
-        )}
+        <AnimatePresence>
+          {showTooltip && !isOpen && (
+            <motion.div
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 8 }}
+              transition={{ duration: 0.4 }}
+              style={{
+                backgroundColor: "rgba(13,20,54,0.9)",
+                backdropFilter: "blur(12px)",
+                WebkitBackdropFilter: "blur(12px)",
+                color: "#ccd6f6",
+                padding: "10px 16px",
+                borderRadius: "12px",
+                fontSize: "13px",
+                fontWeight: 500,
+                boxShadow: "0 4px 24px rgba(0,0,0,0.4), 0 0 8px rgba(0,184,169,0.06)",
+                border: "1px solid rgba(0,184,169,0.15)",
+                whiteSpace: "nowrap",
+                pointerEvents: "none",
+              }}
+            >
+              Need help choosing? 🤖
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {/* Neural Orb Button */}
-        <button
+        {/* Orb button — 48px, single concentric ring */}
+        <motion.button
           onClick={toggleOpen}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
           aria-label={isOpen ? "Close program advisor" : "Open program advisor"}
+          whileHover={prefersReducedMotion ? {} : { scale: 1.08 }}
+          whileTap={prefersReducedMotion ? {} : { scale: 0.95 }}
           style={{
-            width: "60px",
-            height: "60px",
+            width: "48px",
+            height: "48px",
             borderRadius: "50%",
             border: "none",
             cursor: "pointer",
             position: "relative",
             background: "transparent",
             padding: 0,
-            transition: "transform 0.3s ease",
-            transform: isHovered && !isOpen ? "scale(1.1)" : "scale(1)",
           }}
         >
-          <svg
-            width="60"
-            height="60"
-            viewBox="0 0 60 60"
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              filter: `drop-shadow(0 0 ${isHovered ? "16px" : "10px"} rgba(0,184,169,${isHovered ? "0.6" : "0.35"}))`,
-              transition: "filter 0.3s ease",
-            }}
-          >
-            {/* Outer glow circle */}
-            <circle
-              cx="30"
-              cy="30"
-              r="28"
-              fill="none"
-              stroke="rgba(0,184,169,0.15)"
-              strokeWidth="1"
-              style={{ animation: pulseAnimation }}
-            />
-
-            {/* Connection lines radiating outward */}
-            {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => {
-              const rad = (angle * Math.PI) / 180;
-              const innerR = 14;
-              const outerR = isHovered ? 27 : 24;
-              const x1 = 30 + Math.cos(rad) * innerR;
-              const y1 = 30 + Math.sin(rad) * innerR;
-              const x2 = 30 + Math.cos(rad) * outerR;
-              const y2 = 30 + Math.sin(rad) * outerR;
-              return (
-                <line
-                  key={angle}
-                  x1={x1}
-                  y1={y1}
-                  x2={x2}
-                  y2={y2}
-                  stroke="rgba(0,184,169,0.4)"
-                  strokeWidth="1"
-                  strokeLinecap="round"
-                  style={{
-                    transition: "all 0.4s ease",
-                    animation: lineAnimation,
-                    animationDelay: `${i * 0.2}s`,
-                  }}
-                />
-              );
-            })}
-
-            {/* Small endpoint nodes */}
-            {[0, 90, 180, 270].map((angle) => {
-              const rad = (angle * Math.PI) / 180;
-              const r = isHovered ? 26 : 23;
-              return (
-                <circle
-                  key={`node-${angle}`}
-                  cx={30 + Math.cos(rad) * r}
-                  cy={30 + Math.sin(rad) * r}
-                  r="2"
-                  fill="rgba(0,184,169,0.5)"
-                  style={{ transition: "all 0.4s ease" }}
-                />
-              );
-            })}
-
-            {/* Core orb gradient */}
+          <svg width="48" height="48" viewBox="0 0 48 48" style={{ position: "absolute", top: 0, left: 0 }}>
             <defs>
-              <radialGradient id="orbGrad" cx="40%" cy="35%" r="60%">
+              <radialGradient id="ngOrbGrad" cx="38%" cy="35%" r="55%">
                 <stop offset="0%" stopColor="#00d4c1" />
-                <stop offset="50%" stopColor="#00b8a9" />
-                <stop offset="100%" stopColor="#0d1436" />
+                <stop offset="60%" stopColor="#00b8a9" />
+                <stop offset="100%" stopColor="#0a1030" />
               </radialGradient>
+              <filter id="ngGlow">
+                <feGaussianBlur stdDeviation={isHovered ? "4" : "2.5"} />
+              </filter>
             </defs>
-            <circle cx="30" cy="30" r="14" fill="url(#orbGrad)" />
-
-            {/* Inner highlight */}
-            <circle cx="26" cy="26" r="4" fill="rgba(255,255,255,0.12)" />
-
+            {/* Glow layer */}
+            <circle cx="24" cy="24" r="11" fill="#00b8a9" opacity="0.3" filter="url(#ngGlow)" />
+            {/* Concentric ring */}
+            <circle
+              cx="24"
+              cy="24"
+              r="21"
+              fill="none"
+              stroke="rgba(0,184,169,0.12)"
+              strokeWidth="0.75"
+              className="ng-ring"
+            />
+            {/* Core orb */}
+            <circle cx="24" cy="24" r="11" fill="url(#ngOrbGrad)" />
+            {/* Highlight */}
+            <circle cx="21" cy="21" r="3" fill="rgba(255,255,255,0.1)" />
           </svg>
-        </button>
+        </motion.button>
       </div>
 
-      {/* Backdrop (mobile only, rendered via CSS) */}
-      {isOpen && (
-        <div
-          className="orb-backdrop"
-          onClick={toggleOpen}
-          style={{
-            position: "fixed",
-            inset: 0,
-            backgroundColor: "rgba(0,0,0,0.5)",
-            zIndex: 9997,
-            animation: prefersReducedMotion ? "none" : "backdropFadeIn 0.25s ease forwards",
-          }}
-        />
-      )}
+      {/* Backdrop — mobile only */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            className="ng-backdrop"
+            onClick={toggleOpen}
+            initial={prefersReducedMotion ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            style={{
+              position: "fixed",
+              inset: 0,
+              backgroundColor: "rgba(0,0,0,0.6)",
+              zIndex: 9997,
+            }}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Panel */}
-      {isOpen && (
-        <div
-          className="orb-panel"
-          style={{
-            position: "fixed",
-            bottom: "100px",
-            right: "24px",
-            width: "380px",
-            maxHeight: "min(520px, calc(100vh - 140px))",
-            backgroundColor: "#0d1436",
-            borderRadius: "20px",
-            border: "1px solid #1e2d6b",
-            boxShadow: "0 12px 48px rgba(0,0,0,0.5), 0 0 30px rgba(0,184,169,0.08)",
-            zIndex: 9998,
-            display: "flex",
-            flexDirection: "column",
-            overflow: "hidden",
-            animation: prefersReducedMotion ? "none" : "panelSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards",
-          }}
-        >
-          {/* Panel header */}
-          <div
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            className="ng-panel"
+            initial={prefersReducedMotion ? false : { opacity: 0, y: 30, scale: 0.92 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 35 }}
             style={{
-              padding: "16px 20px",
-              borderBottom: "1px solid #1e2d6b",
+              position: "fixed",
+              bottom: "88px",
+              right: "24px",
+              width: "388px",
+              maxHeight: "min(540px, calc(100vh - 120px))",
+              background: "rgba(13,20,54,0.88)",
+              backdropFilter: "blur(24px)",
+              WebkitBackdropFilter: "blur(24px)",
+              borderRadius: "20px",
+              border: "1px solid rgba(0,184,169,0.15)",
+              boxShadow: "0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(0,184,169,0.06), inset 0 1px 0 rgba(255,255,255,0.03)",
+              zIndex: 9998,
               display: "flex",
-              alignItems: "center",
-              gap: "12px",
-              flexShrink: 0,
+              flexDirection: "column",
+              overflow: "hidden",
             }}
           >
+            {/* Animated border glow — conic gradient overlay */}
+            <div
+              className="ng-border-glow"
+              style={{
+                position: "absolute",
+                inset: "-1px",
+                borderRadius: "21px",
+                padding: "1px",
+                pointerEvents: "none",
+                zIndex: 0,
+              }}
+            />
+
+            {/* Header */}
             <div
               style={{
-                width: "32px",
-                height: "32px",
-                borderRadius: "50%",
-                background: "linear-gradient(135deg, #00b8a9, #0d1436)",
+                padding: "18px 20px",
+                borderBottom: "1px solid rgba(0,184,169,0.08)",
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center",
-                boxShadow: "0 0 12px rgba(0,184,169,0.3)",
+                gap: "12px",
                 flexShrink: 0,
+                position: "relative",
+                zIndex: 1,
               }}
             >
-              <svg width="16" height="16" viewBox="0 0 16 16">
-                <circle cx="8" cy="8" r="4" fill="rgba(0,184,169,0.8)" />
-                {[0, 72, 144, 216, 288].map((a) => {
-                  const rad = (a * Math.PI) / 180;
-                  return (
-                    <line
-                      key={a}
-                      x1={8 + Math.cos(rad) * 4}
-                      y1={8 + Math.sin(rad) * 4}
-                      x2={8 + Math.cos(rad) * 7}
-                      y2={8 + Math.sin(rad) * 7}
-                      stroke="rgba(0,184,169,0.5)"
-                      strokeWidth="1"
-                    />
-                  );
-                })}
-              </svg>
-            </div>
-            <div style={{ flex: 1 }}>
-              <div style={{ color: "white", fontSize: "14px", fontWeight: 700 }}>
-                Find Your Path
+              <div
+                style={{
+                  width: "28px",
+                  height: "28px",
+                  borderRadius: "50%",
+                  background: "linear-gradient(135deg, rgba(0,184,169,0.2), rgba(13,20,54,0.6))",
+                  border: "1px solid rgba(0,184,169,0.25)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
+                <svg width="12" height="12" viewBox="0 0 12 12">
+                  <circle cx="6" cy="6" r="3" fill="none" stroke="#00b8a9" strokeWidth="1" opacity="0.8" />
+                  <circle cx="6" cy="6" r="1.5" fill="#00b8a9" opacity="0.6" />
+                </svg>
               </div>
-              <div style={{ color: "#8892b0", fontSize: "11px" }}>AI-powered program advisor</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ color: "#e6f1ff", fontSize: "13px", fontWeight: 600, letterSpacing: "0.01em" }}>
+                  Find Your Path
+                </div>
+                <div style={{ color: "#5a6a8a", fontSize: "10px", fontWeight: 500, letterSpacing: "0.03em" }}>
+                  AI-POWERED ADVISOR
+                </div>
+              </div>
+              <button
+                onClick={toggleOpen}
+                aria-label="Close panel"
+                className="ng-close-btn"
+                style={{
+                  width: "26px",
+                  height: "26px",
+                  borderRadius: "8px",
+                  border: "1px solid rgba(0,184,169,0.1)",
+                  backgroundColor: "rgba(0,184,169,0.04)",
+                  color: "#5a6a8a",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "13px",
+                  lineHeight: 1,
+                  flexShrink: 0,
+                  transition: "all 0.2s ease",
+                }}
+              >
+                ✕
+              </button>
             </div>
-            <button
-              onClick={toggleOpen}
-              aria-label="Close panel"
+
+            {/* Body */}
+            <div
               style={{
-                width: "28px",
-                height: "28px",
-                borderRadius: "8px",
-                border: "1px solid #1e2d6b",
-                backgroundColor: "transparent",
-                color: "#8892b0",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "16px",
-                lineHeight: 1,
-                flexShrink: 0,
-                transition: "all 0.15s ease",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "#00b8a9";
-                e.currentTarget.style.color = "#00b8a9";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = "#1e2d6b";
-                e.currentTarget.style.color = "#8892b0";
+                padding: "24px 22px",
+                overflowY: "auto",
+                flex: 1,
+                position: "relative",
+                zIndex: 1,
               }}
             >
-              ✕
-            </button>
-          </div>
-
-          {/* Panel body - scrollable */}
-          <div
-            style={{
-              padding: "20px 24px",
-              overflowY: "auto",
-              flex: 1,
-            }}
-          >
-            {/* Step 0: Intro */}
-            {step === 0 && (
-              <div style={{ textAlign: "center" }}>
-                <div
-                  style={{
-                    width: "56px",
-                    height: "56px",
-                    borderRadius: "50%",
-                    background: "radial-gradient(circle, #00b8a920 0%, transparent 70%)",
-                    border: "1px solid #00b8a930",
-                    margin: "0 auto 20px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <svg width="24" height="24" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="6" fill="none" stroke="#00b8a9" strokeWidth="1.5" />
-                    {[0, 60, 120, 180, 240, 300].map((a) => {
-                      const rad = (a * Math.PI) / 180;
-                      return (
-                        <circle
-                          key={a}
-                          cx={12 + Math.cos(rad) * 10}
-                          cy={12 + Math.sin(rad) * 10}
-                          r="1.5"
-                          fill="#00b8a960"
-                        />
-                      );
-                    })}
-                  </svg>
-                </div>
-                <h3
-                  style={{
-                    color: "white",
-                    fontSize: "18px",
-                    fontWeight: 700,
-                    marginBottom: "8px",
-                  }}
-                >
-                  Not sure where to start?
-                </h3>
-                <p
-                  style={{
-                    color: "#8892b0",
-                    fontSize: "13px",
-                    lineHeight: 1.6,
-                    marginBottom: "24px",
-                  }}
-                >
-                  Answer 3 quick questions and I&apos;ll recommend the perfect CODED program for you.
-                </p>
-                <button
-                  onClick={() => setStep(1)}
-                  style={{
-                    background: "linear-gradient(135deg, #00b8a9, #00a896)",
-                    color: "white",
-                    padding: "12px 28px",
-                    borderRadius: "999px",
-                    fontWeight: 700,
-                    fontSize: "14px",
-                    border: "none",
-                    cursor: "pointer",
-                    boxShadow: "0 4px 20px rgba(0,184,169,0.3)",
-                    width: "100%",
-                  }}
-                >
-                  Let&apos;s go →
-                </button>
-              </div>
-            )}
-
-            {/* Steps 1-3: Questions */}
-            {step >= 1 && step <= questions.length && (
-              <div>
-                {/* Progress dots */}
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "6px",
-                    justifyContent: "center",
-                    marginBottom: "24px",
-                  }}
-                >
-                  {questions.map((_, i) => (
+              <AnimatePresence mode="wait">
+                {/* Step 0: Intro */}
+                {step === 0 && (
+                  <motion.div key="intro" {...motionProps} style={{ textAlign: "center" }}>
                     <div
-                      key={i}
                       style={{
-                        height: "3px",
-                        width: "40px",
-                        borderRadius: "999px",
-                        backgroundColor: i < step ? "#00b8a9" : "#1e2d6b",
-                        transition: "background-color 0.3s ease",
-                      }}
-                    />
-                  ))}
-                </div>
-
-                <p
-                  style={{
-                    color: "#8892b0",
-                    fontSize: "11px",
-                    marginBottom: "8px",
-                    fontWeight: 600,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.08em",
-                    textAlign: "center",
-                  }}
-                >
-                  {step} of {questions.length}
-                </p>
-
-                <h3
-                  style={{
-                    fontSize: "17px",
-                    fontWeight: 700,
-                    color: "white",
-                    marginBottom: "20px",
-                    textAlign: "center",
-                    lineHeight: 1.3,
-                  }}
-                >
-                  {questions[step - 1].question}
-                </h3>
-
-                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                  {questions[step - 1].options.map((option) => (
-                    <button
-                      key={option.value}
-                      onClick={() => handleAnswer(questions[step - 1].id, option.value)}
-                      className="orb-option-btn"
-                      style={{
-                        backgroundColor: "#111d4a",
-                        border: "1px solid #1e2d6b",
-                        borderRadius: "12px",
-                        padding: "14px 16px",
-                        color: "white",
-                        fontSize: "13px",
-                        fontWeight: 600,
-                        cursor: "pointer",
-                        textAlign: "left",
-                        lineHeight: 1.4,
-                        transition: "all 0.2s ease",
+                        width: "52px",
+                        height: "52px",
+                        borderRadius: "50%",
+                        background: "radial-gradient(circle, rgba(0,184,169,0.1) 0%, transparent 70%)",
+                        border: "1px solid rgba(0,184,169,0.12)",
+                        margin: "0 auto 24px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
                       }}
                     >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Step 4: Loading */}
-            {step === 4 && (
-              <div style={{ textAlign: "center", padding: "32px 0" }}>
-                <div
-                  style={{
-                    width: "48px",
-                    height: "48px",
-                    border: "3px solid #1e2d6b",
-                    borderTop: "3px solid #00b8a9",
-                    borderRadius: "50%",
-                    animation: prefersReducedMotion ? "none" : "spin 1s linear infinite",
-                    margin: "0 auto 20px",
-                  }}
-                />
-                <p style={{ color: "#8892b0", fontSize: "14px" }}>
-                  Finding your match...
-                </p>
-              </div>
-            )}
-
-            {/* Step 5: Result */}
-            {step === 5 && result && (
-              <div>
-                <p
-                  style={{
-                    color: "#00b8a9",
-                    fontSize: "10px",
-                    letterSpacing: "0.15em",
-                    fontWeight: 600,
-                    marginBottom: "16px",
-                    textTransform: "uppercase",
-                    textAlign: "center",
-                  }}
-                >
-                  YOUR PERFECT MATCH
-                </p>
-
-                <div
-                  style={{
-                    backgroundColor: "#111d4a",
-                    border: `1.5px solid ${result.color}`,
-                    borderRadius: "16px",
-                    padding: "20px",
-                    marginBottom: "16px",
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "inline-block",
-                      backgroundColor: result.color + "20",
-                      color: result.color,
-                      padding: "3px 10px",
-                      borderRadius: "999px",
-                      fontSize: "10px",
-                      fontWeight: 700,
-                      marginBottom: "12px",
-                      letterSpacing: "0.05em",
-                    }}
-                  >
-                    RECOMMENDED
-                  </div>
-
-                  <h3
-                    style={{
-                      fontSize: "20px",
-                      fontWeight: 800,
-                      color: "white",
-                      marginBottom: "8px",
-                    }}
-                  >
-                    {result.title}
-                  </h3>
-
-                  <p
-                    style={{
-                      color: "#8892b0",
-                      fontSize: "13px",
-                      lineHeight: 1.6,
-                      marginBottom: "16px",
-                      fontStyle: "italic",
-                    }}
-                  >
-                    &ldquo;{aiExplanation}&rdquo;
-                  </p>
-
-                  {/* Stats grid */}
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr 1fr",
-                      gap: "12px",
-                      marginBottom: "20px",
-                    }}
-                  >
-                    {[
-                      { label: "Duration", value: result.duration },
-                      { label: "Price", value: result.price },
-                      { label: "Next cohort", value: result.nextCohort },
-                      { label: "Seats left", value: `${result.seats}` },
-                    ].map((item) => (
-                      <div key={item.label}>
-                        <div
-                          style={{
-                            color: "#8892b0",
-                            fontSize: "10px",
-                            fontWeight: 600,
-                            letterSpacing: "0.06em",
-                            textTransform: "uppercase",
-                            marginBottom: "2px",
-                          }}
-                        >
-                          {item.label}
-                        </div>
-                        <div
-                          style={{
-                            color: "white",
-                            fontSize: "13px",
-                            fontWeight: 700,
-                          }}
-                        >
-                          {item.value}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div style={{ display: "flex", gap: "8px" }}>
-                    <a
-                      href={`/programs/${result.slug}`}
+                      <svg width="20" height="20" viewBox="0 0 20 20">
+                        <circle cx="10" cy="10" r="5" fill="none" stroke="#00b8a9" strokeWidth="1" opacity="0.6" />
+                        {[0, 72, 144, 216, 288].map((a) => {
+                          const rad = (a * Math.PI) / 180;
+                          return (
+                            <circle key={a} cx={10 + Math.cos(rad) * 8} cy={10 + Math.sin(rad) * 8} r="1.2" fill="rgba(0,184,169,0.35)" />
+                          );
+                        })}
+                      </svg>
+                    </div>
+                    <h3 style={{ color: "#e6f1ff", fontSize: "18px", fontWeight: 700, marginBottom: "10px", letterSpacing: "-0.01em" }}>
+                      Not sure where to start?
+                    </h3>
+                    <p style={{ color: "#5a6a8a", fontSize: "13px", lineHeight: 1.7, marginBottom: "28px", maxWidth: "280px", margin: "0 auto 28px" }}>
+                      Answer 3 quick questions and I&apos;ll recommend the perfect CODED program for you.
+                    </p>
+                    <motion.button
+                      onClick={() => setStep(1)}
+                      whileHover={prefersReducedMotion ? {} : { scale: 1.02, boxShadow: "0 6px 28px rgba(0,184,169,0.35)" }}
+                      whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
                       style={{
-                        background: `linear-gradient(135deg, ${result.color}, ${result.color}cc)`,
+                        background: "linear-gradient(135deg, #00b8a9, #00a896)",
                         color: "white",
-                        padding: "10px 20px",
+                        padding: "13px 28px",
                         borderRadius: "999px",
-                        fontWeight: 700,
+                        fontWeight: 600,
                         fontSize: "13px",
-                        textDecoration: "none",
-                        boxShadow: `0 4px 16px ${result.color}44`,
-                        flex: 1,
+                        border: "none",
+                        cursor: "pointer",
+                        boxShadow: "0 4px 20px rgba(0,184,169,0.25)",
+                        width: "100%",
+                        letterSpacing: "0.02em",
+                      }}
+                    >
+                      Let&apos;s go →
+                    </motion.button>
+                  </motion.div>
+                )}
+
+                {/* Steps 1-3: Questions */}
+                {step >= 1 && step <= questions.length && (
+                  <motion.div key={`q-${step}`} {...motionProps}>
+                    <CompletedPills step={step} answers={answers} />
+
+                    {!showQuestion ? (
+                      <TypingDots />
+                    ) : (
+                      <>
+                        <p
+                          style={{
+                            color: "#5a6a8a",
+                            fontSize: "10px",
+                            marginBottom: "6px",
+                            fontWeight: 600,
+                            textTransform: "uppercase",
+                            letterSpacing: "0.1em",
+                            textAlign: "center",
+                          }}
+                        >
+                          {step} of {questions.length}
+                        </p>
+
+                        <h3
+                          style={{
+                            fontSize: "17px",
+                            fontWeight: 700,
+                            color: "#e6f1ff",
+                            marginBottom: "22px",
+                            textAlign: "center",
+                            lineHeight: 1.35,
+                            letterSpacing: "-0.01em",
+                          }}
+                        >
+                          {questions[step - 1].question}
+                        </h3>
+
+                        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                          {questions[step - 1].options.map((option, i) => (
+                            <motion.button
+                              key={option.value}
+                              initial={prefersReducedMotion ? false : { opacity: 0, x: 16 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: i * 0.06, type: "spring", stiffness: 400, damping: 30 }}
+                              onClick={() => handleAnswer(questions[step - 1].id, option.value)}
+                              className="ng-option-btn"
+                              whileHover={prefersReducedMotion ? {} : { y: -1, boxShadow: "0 4px 16px rgba(0,184,169,0.12)" }}
+                              whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
+                              style={{
+                                backgroundColor: "rgba(17,29,74,0.6)",
+                                border: "1px solid rgba(30,45,107,0.5)",
+                                borderRadius: "12px",
+                                padding: "14px 16px",
+                                color: "#ccd6f6",
+                                fontSize: "13px",
+                                fontWeight: 500,
+                                cursor: "pointer",
+                                textAlign: "left",
+                                lineHeight: 1.4,
+                                transition: "border-color 0.2s ease, background-color 0.2s ease",
+                              }}
+                            >
+                              {option.label}
+                            </motion.button>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </motion.div>
+                )}
+
+                {/* Step 4: Loading */}
+                {step === 4 && (
+                  <motion.div key="loading" {...motionProps} style={{ textAlign: "center", padding: "36px 0" }}>
+                    <div style={{ marginBottom: "20px" }}>
+                      <TypingDots />
+                    </div>
+                    <p style={{ color: "#5a6a8a", fontSize: "13px", fontWeight: 500 }}>
+                      Analyzing your answers...
+                    </p>
+                  </motion.div>
+                )}
+
+                {/* Step 5: Result */}
+                {step === 5 && result && (
+                  <motion.div key="result" {...motionProps}>
+                    <p
+                      style={{
+                        color: "#00b8a9",
+                        fontSize: "10px",
+                        letterSpacing: "0.15em",
+                        fontWeight: 600,
+                        marginBottom: "16px",
+                        textTransform: "uppercase",
                         textAlign: "center",
                       }}
                     >
-                      Apply Now →
-                    </a>
-                    <button
-                      onClick={reset}
+                      YOUR PERFECT MATCH
+                    </p>
+
+                    <motion.div
+                      initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.15, type: "spring", stiffness: 300, damping: 30 }}
                       style={{
-                        backgroundColor: "transparent",
-                        color: "#8892b0",
-                        padding: "10px 16px",
-                        borderRadius: "999px",
-                        fontWeight: 600,
-                        fontSize: "13px",
-                        border: "1px solid #1e2d6b",
-                        cursor: "pointer",
-                        whiteSpace: "nowrap",
+                        backgroundColor: "rgba(17,29,74,0.5)",
+                        border: "1px solid rgba(0,184,169,0.12)",
+                        borderRadius: "16px",
+                        overflow: "hidden",
+                        marginBottom: "12px",
                       }}
                     >
-                      Restart
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+                      {/* Gradient header stripe */}
+                      <div
+                        style={{
+                          height: "4px",
+                          background: `linear-gradient(90deg, ${result.color}, ${result.color}88, ${result.color})`,
+                        }}
+                      />
+
+                      <div style={{ padding: "20px" }}>
+                        <div
+                          style={{
+                            display: "inline-block",
+                            backgroundColor: "rgba(0,184,169,0.08)",
+                            color: "#00b8a9",
+                            padding: "3px 10px",
+                            borderRadius: "999px",
+                            fontSize: "9px",
+                            fontWeight: 700,
+                            marginBottom: "14px",
+                            letterSpacing: "0.1em",
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          RECOMMENDED
+                        </div>
+
+                        <h3 style={{ fontSize: "20px", fontWeight: 700, color: "#e6f1ff", marginBottom: "8px", letterSpacing: "-0.01em" }}>
+                          {result.title}
+                        </h3>
+
+                        <p style={{ color: "#5a6a8a", fontSize: "12px", lineHeight: 1.6, marginBottom: "18px", fontStyle: "italic" }}>
+                          &ldquo;{aiExplanation}&rdquo;
+                        </p>
+
+                        <div
+                          style={{
+                            display: "grid",
+                            gridTemplateColumns: "1fr 1fr",
+                            gap: "14px",
+                            marginBottom: "20px",
+                            padding: "14px",
+                            backgroundColor: "rgba(0,0,0,0.15)",
+                            borderRadius: "10px",
+                          }}
+                        >
+                          {[
+                            { label: "Duration", value: result.duration },
+                            { label: "Price", value: result.price },
+                            { label: "Next cohort", value: result.nextCohort },
+                            { label: "Seats left", value: `${result.seats} remaining` },
+                          ].map((item) => (
+                            <div key={item.label}>
+                              <div style={{ color: "#5a6a8a", fontSize: "9px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "3px" }}>
+                                {item.label}
+                              </div>
+                              <div style={{ color: "#ccd6f6", fontSize: "12px", fontWeight: 600 }}>
+                                {item.value}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+
+                        <div style={{ display: "flex", gap: "8px" }}>
+                          <motion.a
+                            href={`/programs/${result.slug}`}
+                            whileHover={prefersReducedMotion ? {} : { scale: 1.02, boxShadow: `0 6px 24px ${result.color}44` }}
+                            whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
+                            style={{
+                              background: `linear-gradient(135deg, ${result.color}, ${result.color}cc)`,
+                              color: "white",
+                              padding: "11px 20px",
+                              borderRadius: "999px",
+                              fontWeight: 600,
+                              fontSize: "12px",
+                              textDecoration: "none",
+                              boxShadow: `0 4px 16px ${result.color}33`,
+                              flex: 1,
+                              textAlign: "center",
+                              letterSpacing: "0.02em",
+                            }}
+                          >
+                            Apply Now →
+                          </motion.a>
+                          <motion.button
+                            onClick={reset}
+                            whileHover={prefersReducedMotion ? {} : { borderColor: "rgba(0,184,169,0.3)" }}
+                            style={{
+                              backgroundColor: "transparent",
+                              color: "#5a6a8a",
+                              padding: "11px 14px",
+                              borderRadius: "999px",
+                              fontWeight: 500,
+                              fontSize: "12px",
+                              border: "1px solid rgba(30,45,107,0.5)",
+                              cursor: "pointer",
+                              whiteSpace: "nowrap",
+                              transition: "all 0.2s ease",
+                            }}
+                          >
+                            Restart
+                          </motion.button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <style>{`
-        @keyframes orbPulse {
-          0%, 100% { r: 28; opacity: 1; }
-          50% { r: 29; opacity: 0.6; }
+        @keyframes ngRingPulse {
+          0%, 100% { opacity: 0.12; transform: scale(1); }
+          50% { opacity: 0.06; transform: scale(1.06); }
         }
-        @keyframes orbLineFloat {
-          0%, 100% { opacity: 0.4; }
-          50% { opacity: 0.7; }
+        @keyframes ngBorderRotate {
+          from { --ng-angle: 0deg; }
+          to { --ng-angle: 360deg; }
         }
-        @keyframes tooltipFadeIn {
-          from { opacity: 0; transform: translateY(8px); }
-          to { opacity: 1; transform: translateY(0); }
+        .ng-ring {
+          transform-origin: center;
+          animation: ngRingPulse 3s ease-in-out infinite;
         }
-        @keyframes panelSlideIn {
-          from { opacity: 0; transform: translateY(20px) scale(0.95); }
-          to { opacity: 1; transform: translateY(0) scale(1); }
+        .ng-close-btn:hover {
+          border-color: rgba(0,184,169,0.3) !important;
+          color: #00b8a9 !important;
+          background-color: rgba(0,184,169,0.08) !important;
         }
-        @keyframes panelSlideUp {
-          from { transform: translateY(100%); }
-          to { transform: translateY(0); }
+        .ng-option-btn:hover {
+          border-color: rgba(0,184,169,0.3) !important;
+          background-color: rgba(0,184,169,0.06) !important;
         }
-        @keyframes backdropFadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
+        .ng-border-glow {
+          background: conic-gradient(
+            from var(--ng-angle, 0deg),
+            transparent 0%,
+            rgba(0,184,169,0.15) 25%,
+            transparent 50%,
+            rgba(30,45,107,0.3) 75%,
+            transparent 100%
+          );
+          -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+          mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+          -webkit-mask-composite: xor;
+          mask-composite: exclude;
+          animation: ngBorderRotate 8s linear infinite;
         }
-        @keyframes spin {
-          to { transform: rotate(360deg); }
+        @property --ng-angle {
+          syntax: "<angle>";
+          initial-value: 0deg;
+          inherits: false;
         }
-        .orb-option-btn:hover {
-          border-color: #00b8a9 !important;
-          background-color: #0d2040 !important;
-        }
-        /* Desktop: hide backdrop */
         @media (min-width: 641px) {
-          .orb-backdrop { display: none !important; }
+          .ng-backdrop { display: none !important; }
         }
-        /* Mobile bottom sheet */
         @media (max-width: 640px) {
-          .orb-panel {
+          .ng-panel {
             bottom: 0 !important;
             right: 0 !important;
             left: 0 !important;
             width: 100% !important;
             max-height: 70vh !important;
             border-radius: 20px 20px 0 0 !important;
-            animation: panelSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
           }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .ng-ring { animation: none; }
+          .ng-border-glow { animation: none; }
         }
       `}</style>
     </>
