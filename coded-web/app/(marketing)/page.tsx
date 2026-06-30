@@ -7,6 +7,7 @@ import CompanyLogos from "@/components/sections/CompanyLogos";
 import StatsBar from "@/components/sections/StatsBar";
 import HowItWorks from "@/components/sections/HowItWorks";
 import FAQSection from "@/components/sections/FAQSection";
+import FindYourPath from "@/components/sections/FindYourPath";
 import CTASection from "@/components/sections/CTASection";
 import Footer from "@/components/layout/Footer";
 import type { Tables } from "@/lib/supabase/types";
@@ -121,6 +122,7 @@ export default async function Home() {
       <CompanyLogos companies={companies} />
       <StatsBar stats={stats} />
       <HowItWorks steps={stepList} />
+      <FindYourPath />
       <FAQSection faqs={faqList} />
       <CTASection />
       <Footer />
