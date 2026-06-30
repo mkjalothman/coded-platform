@@ -306,26 +306,35 @@ export default function NeuralOrbLauncher() {
             {/* Inner highlight */}
             <circle cx="26" cy="26" r="4" fill="rgba(255,255,255,0.12)" />
 
-            {/* Close X icon when open */}
-            {isOpen && (
-              <g stroke="white" strokeWidth="2" strokeLinecap="round">
-                <line x1="22" y1="22" x2="38" y2="38" />
-                <line x1="38" y1="22" x2="22" y2="38" />
-              </g>
-            )}
           </svg>
         </button>
       </div>
 
+      {/* Backdrop (mobile only, rendered via CSS) */}
+      {isOpen && (
+        <div
+          className="orb-backdrop"
+          onClick={toggleOpen}
+          style={{
+            position: "fixed",
+            inset: 0,
+            backgroundColor: "rgba(0,0,0,0.5)",
+            zIndex: 9997,
+            animation: prefersReducedMotion ? "none" : "backdropFadeIn 0.25s ease forwards",
+          }}
+        />
+      )}
+
       {/* Panel */}
       {isOpen && (
         <div
+          className="orb-panel"
           style={{
             position: "fixed",
             bottom: "100px",
             right: "24px",
-            width: "min(400px, calc(100vw - 48px))",
-            maxHeight: "min(560px, calc(100vh - 140px))",
+            width: "380px",
+            maxHeight: "min(520px, calc(100vh - 140px))",
             backgroundColor: "#0d1436",
             borderRadius: "20px",
             border: "1px solid #1e2d6b",
@@ -340,7 +349,7 @@ export default function NeuralOrbLauncher() {
           {/* Panel header */}
           <div
             style={{
-              padding: "20px 24px 16px",
+              padding: "16px 20px",
               borderBottom: "1px solid #1e2d6b",
               display: "flex",
               alignItems: "center",
@@ -379,12 +388,42 @@ export default function NeuralOrbLauncher() {
                 })}
               </svg>
             </div>
-            <div>
-              <div style={{ color: "white", fontSize: "15px", fontWeight: 700 }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ color: "white", fontSize: "14px", fontWeight: 700 }}>
                 Find Your Path
               </div>
               <div style={{ color: "#8892b0", fontSize: "11px" }}>AI-powered program advisor</div>
             </div>
+            <button
+              onClick={toggleOpen}
+              aria-label="Close panel"
+              style={{
+                width: "28px",
+                height: "28px",
+                borderRadius: "8px",
+                border: "1px solid #1e2d6b",
+                backgroundColor: "transparent",
+                color: "#8892b0",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "16px",
+                lineHeight: 1,
+                flexShrink: 0,
+                transition: "all 0.15s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = "#00b8a9";
+                e.currentTarget.style.color = "#00b8a9";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = "#1e2d6b";
+                e.currentTarget.style.color = "#8892b0";
+              }}
+            >
+              ✕
+            </button>
           </div>
 
           {/* Panel body - scrollable */}
@@ -732,12 +771,36 @@ export default function NeuralOrbLauncher() {
           from { opacity: 0; transform: translateY(20px) scale(0.95); }
           to { opacity: 1; transform: translateY(0) scale(1); }
         }
+        @keyframes panelSlideUp {
+          from { transform: translateY(100%); }
+          to { transform: translateY(0); }
+        }
+        @keyframes backdropFadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
         @keyframes spin {
           to { transform: rotate(360deg); }
         }
         .orb-option-btn:hover {
           border-color: #00b8a9 !important;
           background-color: #0d2040 !important;
+        }
+        /* Desktop: hide backdrop */
+        @media (min-width: 641px) {
+          .orb-backdrop { display: none !important; }
+        }
+        /* Mobile bottom sheet */
+        @media (max-width: 640px) {
+          .orb-panel {
+            bottom: 0 !important;
+            right: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            max-height: 70vh !important;
+            border-radius: 20px 20px 0 0 !important;
+            animation: panelSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+          }
         }
       `}</style>
     </>
