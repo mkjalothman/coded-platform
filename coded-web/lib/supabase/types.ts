@@ -17,6 +17,13 @@ export interface Database {
           description: string;
           accent_color: string;
           sort: number;
+          category: string;
+          price: string;
+          duration: string;
+          next_cohort: string;
+          seats_left: number;
+          age_min: number | null;
+          age_max: number | null;
           created_at: string;
         };
         Insert: {
@@ -26,6 +33,13 @@ export interface Database {
           description: string;
           accent_color?: string;
           sort?: number;
+          category?: string;
+          price?: string;
+          duration?: string;
+          next_cohort?: string;
+          seats_left?: number;
+          age_min?: number | null;
+          age_max?: number | null;
           created_at?: string;
         };
         Update: {
@@ -35,6 +49,39 @@ export interface Database {
           description?: string;
           accent_color?: string;
           sort?: number;
+          category?: string;
+          price?: string;
+          duration?: string;
+          next_cohort?: string;
+          seats_left?: number;
+          age_min?: number | null;
+          age_max?: number | null;
+          created_at?: string;
+        };
+      };
+      leads: {
+        Row: {
+          id: string;
+          email: string;
+          name: string;
+          recommended_program: string;
+          answers: Record<string, string>;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          email: string;
+          name?: string;
+          recommended_program: string;
+          answers?: Record<string, string>;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          email?: string;
+          name?: string;
+          recommended_program?: string;
+          answers?: Record<string, string>;
           created_at?: string;
         };
       };

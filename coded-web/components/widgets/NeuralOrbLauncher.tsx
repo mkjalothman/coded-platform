@@ -1,10 +1,62 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { colors, spring, easing } from "@/design-system";
 
-const questions = [
+/* ────────────────────────────────────────────
+   Types
+   ──────────────────────────────────────────── */
+
+interface Program {
+  slug: string;
+  name: string;
+  description: string;
+  accent_color: string;
+  category: string;
+  price: string;
+  duration: string;
+  next_cohort: string;
+  seats_left: number;
+}
+
+interface QuestionDef {
+  id: string;
+  question: string;
+  options: { label: string; value: string; icon: string }[];
+}
+
+/* ────────────────────────────────────────────
+   Fallback programs (never breaks if Supabase is down)
+   ──────────────────────────────────────────── */
+
+const FALLBACK_PROGRAMS: Program[] = [
+  { slug: "ai-app-developer", name: "AI App Developer", accent_color: colors.track.aiAppDev, category: "bootcamp", price: "KWD 450", duration: "12 weeks", next_cohort: "Aug 12, 2025", seats_left: 7, description: "Build full-stack AI products from frontend to backend using modern tools and real workflows." },
+  { slug: "cybersecurity", name: "Cybersecurity", accent_color: colors.track.cybersecurity, category: "bootcamp", price: "KWD 350", duration: "10 weeks", next_cohort: "Oct 5, 2025", seats_left: 20, description: "Real attack and defense techniques. Hands-on labs, no dry theory." },
+  { slug: "ai-data-science", name: "AI & Data Science", accent_color: colors.track.aiDataScience, category: "bootcamp", price: "KWD 380", duration: "10 weeks", next_cohort: "Oct 12, 2025", seats_left: 20, description: "Work with real data, build models, and turn insights into decisions." },
+  { slug: "agentic-ai", name: "Agentic AI Bootcamp", accent_color: colors.track.agenticAi, category: "bootcamp", price: "KWD 400", duration: "10 weeks", next_cohort: "Sep 8, 2025", seats_left: 18, description: "Design and deploy AI agents that reason, plan, and execute tasks autonomously." },
+  { slug: "kids", name: "Spark Your Kid", accent_color: "#ef4444", category: "kids", price: "KWD 150", duration: "Weekends & breaks", next_cohort: "Rolling enrollment", seats_left: 15, description: "A guided start that builds logic, creativity, and confidence through coding." },
+  { slug: "youth", name: "Launch Your Tech Career", accent_color: "#3b82f6", category: "youth", price: "KWD 250", duration: "Semester-based", next_cohort: "Sep 2025", seats_left: 25, description: "Year-round programs for students and fresh graduates to build real skills." },
+  { slug: "enterprise", name: "Build Job Skills", accent_color: "#0a0f2e", category: "enterprise", price: "Custom pricing", duration: "Flexible", next_cohort: "On demand", seats_left: 0, description: "Intensive, career-focused training for teams with custom curriculum." },
+];
+
+/* ────────────────────────────────────────────
+   Question bank
+   ──────────────────────────────────────────── */
+
+const audienceQ: QuestionDef = {
+  id: "audience",
+  question: "Who is this for?",
+  options: [
+    { label: "Myself (adult)", value: "adult", icon: "briefcase" },
+    { label: "A teen (14–24)", value: "youth", icon: "cap" },
+    { label: "A child (6–13)", value: "child", icon: "spark" },
+    { label: "A company", value: "enterprise", icon: "building" },
+  ],
+};
+
+const adultQuestions: QuestionDef[] = [
+  audienceQ,
   {
     id: "background",
     question: "What describes you best?",
@@ -37,56 +89,127 @@ const questions = [
   },
 ];
 
-const programData = [
+const youthQuestions: QuestionDef[] = [
+  audienceQ,
   {
-    slug: "ai-app-developer",
-    title: "AI App Developer",
-    color: colors.track.aiAppDev,
-    price: "KWD 450",
-    duration: "12 weeks",
-    nextCohort: "Aug 12, 2025",
-    seats: 7,
-    description: "Build full-stack AI products from frontend to backend using modern tools and real workflows.",
-  },
-  {
-    slug: "cybersecurity",
-    title: "Cybersecurity",
-    color: colors.track.cybersecurity,
-    price: "KWD 350",
-    duration: "10 weeks",
-    nextCohort: "Oct 5, 2025",
-    seats: 20,
-    description: "Real attack and defense techniques. Hands-on labs, no dry theory.",
-  },
-  {
-    slug: "ai-data-science",
-    title: "AI & Data Science",
-    color: colors.track.aiDataScience,
-    price: "KWD 380",
-    duration: "10 weeks",
-    nextCohort: "Oct 12, 2025",
-    seats: 20,
-    description: "Work with real data, build models, and turn insights into decisions.",
-  },
-  {
-    slug: "agentic-ai",
-    title: "Agentic AI",
-    color: colors.track.agenticAi,
-    price: "KWD 400",
-    duration: "10 weeks",
-    nextCohort: "Sep 8, 2025",
-    seats: 18,
-    description: "Design and deploy AI agents that reason, plan, and execute tasks autonomously.",
+    id: "interest",
+    question: "What sounds most interesting?",
+    options: [
+      { label: "Building apps & websites", value: "building apps and websites", icon: "spark" },
+      { label: "AI & machine learning", value: "AI and machine learning", icon: "bot" },
+      { label: "Cybersecurity & hacking", value: "cybersecurity and ethical hacking", icon: "shield" },
+      { label: "Not sure yet", value: "exploring options", icon: "arrows" },
+    ],
   },
 ];
 
-function matchProgram(answers: Record<string, string>): (typeof programData)[0] {
-  const interest = answers.interest || "";
-  if (interest.includes("cybersecurity")) return programData[1];
-  if (interest.includes("data science")) return programData[2];
-  if (interest.includes("agents")) return programData[3];
-  return programData[0];
+const kidsQuestions: QuestionDef[] = [
+  audienceQ,
+  {
+    id: "goal",
+    question: "What's the goal for your child?",
+    options: [
+      { label: "Learn to think logically", value: "develop logical thinking", icon: "chart" },
+      { label: "Build fun projects", value: "build fun creative projects", icon: "spark" },
+      { label: "Get ahead in school", value: "gain an academic advantage", icon: "cap" },
+      { label: "See if they like coding", value: "explore if coding is a fit", icon: "arrows" },
+    ],
+  },
+];
+
+const enterpriseQuestions: QuestionDef[] = [
+  audienceQ,
+  {
+    id: "need",
+    question: "What does your team need?",
+    options: [
+      { label: "AI & automation skills", value: "AI and automation upskilling", icon: "bot" },
+      { label: "Cybersecurity training", value: "cybersecurity awareness and training", icon: "shield" },
+      { label: "Data literacy", value: "data analysis and literacy", icon: "chart" },
+      { label: "Custom program", value: "a custom-designed training program", icon: "building" },
+    ],
+  },
+];
+
+function getQuestionSet(audience: string): QuestionDef[] {
+  switch (audience) {
+    case "youth": return youthQuestions;
+    case "child": return kidsQuestions;
+    case "enterprise": return enterpriseQuestions;
+    default: return adultQuestions;
+  }
 }
+
+/* ────────────────────────────────────────────
+   Local matching (fallback when AI API unavailable)
+   ──────────────────────────────────────────── */
+
+function matchPrograms(answers: Record<string, string>, programs: Program[]): { primary: Program; secondary: Program | null; reason: string } {
+  const audience = answers.audience || "adult";
+  const interest = answers.interest || "";
+  const goal = answers.goal || "";
+  const need = answers.need || "";
+  const background = answers.background || "";
+  const availability = answers.availability || "";
+
+  const bootcamps = programs.filter((p) => p.category === "bootcamp");
+  const find = (slug: string) => programs.find((p) => p.slug === slug);
+
+  if (audience === "child") {
+    const kids = find("kids") || FALLBACK_PROGRAMS[4];
+    return { primary: kids, secondary: find("youth") || null, reason: `Because your child is in the 6–13 age range, this program builds coding confidence through fun, guided projects.` };
+  }
+
+  if (audience === "youth") {
+    const youth = find("youth") || FALLBACK_PROGRAMS[5];
+    let secondary: Program | null = null;
+    let reason = "Designed for students and fresh graduates ready to build real tech skills.";
+    if (interest.includes("cybersecurity")) {
+      secondary = find("cybersecurity") || null;
+      reason = "Great for teens interested in cybersecurity — start with our youth track and level up.";
+    } else if (interest.includes("AI")) {
+      secondary = find("ai-app-developer") || null;
+      reason = "Perfect for teens excited about AI — our youth track gets you started building.";
+    }
+    return { primary: youth, secondary, reason };
+  }
+
+  if (audience === "enterprise") {
+    const enterprise = find("enterprise") || FALLBACK_PROGRAMS[6];
+    let secondary: Program | null = null;
+    if (need.includes("cybersecurity")) secondary = find("cybersecurity") || null;
+    else if (need.includes("AI")) secondary = find("ai-app-developer") || null;
+    else if (need.includes("data")) secondary = find("ai-data-science") || null;
+    return { primary: enterprise, secondary, reason: `Custom training designed around your team's needs with flexible scheduling.` };
+  }
+
+  // Adult bootcamp matching
+  let primary: Program = bootcamps[0] || FALLBACK_PROGRAMS[0];
+  let secondary: Program | null = null;
+
+  if (interest.includes("cybersecurity")) {
+    primary = find("cybersecurity") || FALLBACK_PROGRAMS[1];
+    secondary = find("ai-app-developer") || null;
+  } else if (interest.includes("data science")) {
+    primary = find("ai-data-science") || FALLBACK_PROGRAMS[2];
+    secondary = find("ai-app-developer") || null;
+  } else if (interest.includes("agents")) {
+    primary = find("agentic-ai") || FALLBACK_PROGRAMS[3];
+    secondary = find("ai-app-developer") || null;
+  } else {
+    primary = find("ai-app-developer") || FALLBACK_PROGRAMS[0];
+    secondary = find("agentic-ai") || null;
+  }
+
+  const bgSnippet = background.includes("career") ? "as someone changing careers" : background.includes("graduate") ? "as a fresh graduate" : background.includes("professional") ? "as a working professional" : "";
+  const timeSnippet = availability.includes("evening") ? " with evening sessions that fit your schedule" : availability.includes("ASAP") || availability.includes("soon") ? " and you can start right away" : "";
+
+  return { primary, secondary, reason: `${bgSnippet ? `Perfect ${bgSnippet}` : "Based on your interests"} — this track focuses on ${interest.includes("cybersecurity") ? "hands-on security skills" : interest.includes("data") ? "real data and models" : interest.includes("agents") ? "autonomous AI agents" : "building AI products"}${timeSnippet}.` };
+}
+
+/* ────────────────────────────────────────────
+   Sub-components
+   ──────────────────────────────────────────── */
 
 function TypingDots() {
   return (
@@ -94,12 +217,7 @@ function TypingDots() {
       {[0, 1, 2].map((i) => (
         <motion.div
           key={i}
-          style={{
-            width: "6px",
-            height: "6px",
-            borderRadius: "50%",
-            backgroundColor: colors.brand.teal,
-          }}
+          style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: colors.brand.teal }}
           animate={{ opacity: [0.2, 1, 0.2], scale: [0.7, 1, 0.7] }}
           transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.2, ease: "easeInOut" }}
         />
@@ -140,29 +258,60 @@ function ProgressSegments({ current, total }: { current: number; total: number }
             scaleX: i < current ? 1 : 0.92,
           }}
           transition={{ duration: 0.4, ease: easing.apple }}
-          style={{
-            height: "3px",
-            flex: 1,
-            borderRadius: "999px",
-            transformOrigin: "left",
-          }}
+          style={{ height: "3px", flex: 1, borderRadius: "999px", transformOrigin: "left" }}
         />
       ))}
     </div>
   );
 }
 
+/* ────────────────────────────────────────────
+   Main Component
+   ──────────────────────────────────────────── */
+
 export default function NeuralOrbLauncher() {
   const [isOpen, setIsOpen] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-  const [showQuestion, setShowQuestion] = useState(false);
+  const [showQuestion, setShowQuestion] = useState(true);
 
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(1); // 1-based question index
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [result, setResult] = useState<(typeof programData)[0] | null>(null);
+  const [result, setResult] = useState<Program | null>(null);
+  const [secondaryResult, setSecondaryResult] = useState<Program | null>(null);
   const [aiExplanation, setAiExplanation] = useState("");
+  const [phase, setPhase] = useState<"questions" | "loading" | "result">("questions");
 
+  // Lead capture
+  const [leadEmail, setLeadEmail] = useState("");
+  const [leadName, setLeadName] = useState("");
+  const [leadSubmitted, setLeadSubmitted] = useState(false);
+  const [leadSubmitting, setLeadSubmitting] = useState(false);
+
+  // Programs from Supabase
+  const [programs, setPrograms] = useState<Program[]>(FALLBACK_PROGRAMS);
+  const programsFetched = useRef(false);
+
+  // Fetch programs once
+  useEffect(() => {
+    if (programsFetched.current) return;
+    programsFetched.current = true;
+
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    if (!url || !key) return;
+
+    fetch(`${url}/rest/v1/programs?select=slug,name,description,accent_color,category,price,duration,next_cohort,seats_left&order=sort`, {
+      headers: { apikey: key, Authorization: `Bearer ${key}` },
+    })
+      .then((r) => r.json())
+      .then((data: Program[]) => {
+        if (Array.isArray(data) && data.length > 0) setPrograms(data);
+      })
+      .catch(() => {});
+  }, []);
+
+  // Reduced motion
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
     setPrefersReducedMotion(mq.matches);
@@ -171,76 +320,141 @@ export default function NeuralOrbLauncher() {
     return () => mq.removeEventListener("change", handler);
   }, []);
 
+  // Tooltip delay
   useEffect(() => {
     if (isOpen) return;
     const timer = setTimeout(() => setShowTooltip(true), 5000);
     return () => clearTimeout(timer);
   }, [isOpen]);
 
+  // Typing-dots delay between questions
   useEffect(() => {
-    if (step >= 1 && step <= questions.length) {
-      setShowQuestion(false);
-      const timer = setTimeout(() => setShowQuestion(true), prefersReducedMotion ? 0 : 500);
-      return () => clearTimeout(timer);
-    }
-    setShowQuestion(true);
-  }, [step, prefersReducedMotion]);
+    if (phase !== "questions") return;
+    setShowQuestion(false);
+    const timer = setTimeout(() => setShowQuestion(true), prefersReducedMotion ? 0 : 400);
+    return () => clearTimeout(timer);
+  }, [step, phase, prefersReducedMotion]);
+
+  const questionSet = useMemo(() => getQuestionSet(answers.audience || ""), [answers.audience]);
+  const totalQuestions = questionSet.length;
+  const currentQ = questionSet[step - 1] as QuestionDef | undefined;
 
   const handleAnswer = useCallback(
     async (questionId: string, value: string) => {
       const newAnswers = { ...answers, [questionId]: value };
       setAnswers(newAnswers);
 
-      const isLastQuestion = step === questions.length;
-      if (!isLastQuestion) {
+      // After audience question, the question set might change
+      const newSet = questionId === "audience" ? getQuestionSet(value) : questionSet;
+      const isLast = step >= newSet.length;
+
+      if (!isLast) {
         setStep(step + 1);
         return;
       }
 
-      setStep(4);
+      // Last question → analyze
+      setPhase("loading");
+
+      let primary: Program;
+      let secondary: Program | null;
+      let reason: string;
+
       try {
         const response = await fetch("/api/recommend", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             background: newAnswers.background,
-            goals: newAnswers.interest,
-            segment: newAnswers.availability,
+            goals: newAnswers.interest || newAnswers.goal || newAnswers.need,
+            segment: newAnswers.audience === "child" ? "kids" : newAnswers.audience,
           }),
         });
         const data = await response.json();
         const recs = data.recommendations;
         if (recs && recs.length > 0) {
           const topSlug = recs[0].slug || recs[0].program;
-          const recommended = programData.find((p) => p.slug === topSlug) || matchProgram(newAnswers);
-          setResult(recommended);
-          setAiExplanation(recs[0].reason || recommended.description);
+          primary = programs.find((p) => p.slug === topSlug) || matchPrograms(newAnswers, programs).primary;
+          reason = recs[0].reason || primary.description;
+          const secSlug = recs[1]?.slug;
+          secondary = secSlug ? programs.find((p) => p.slug === secSlug) || null : matchPrograms(newAnswers, programs).secondary;
         } else {
-          const recommended = matchProgram(newAnswers);
-          setResult(recommended);
-          setAiExplanation(recommended.description);
+          ({ primary, secondary, reason } = matchPrograms(newAnswers, programs));
         }
       } catch {
-        const recommended = matchProgram(newAnswers);
-        setResult(recommended);
-        setAiExplanation(recommended.description);
+        ({ primary, secondary, reason } = matchPrograms(newAnswers, programs));
       }
-      setStep(5);
+
+      setResult(primary);
+      setSecondaryResult(secondary?.slug === primary.slug ? null : secondary);
+      setAiExplanation(reason);
+      setPhase("result");
     },
-    [answers, step]
+    [answers, step, programs, questionSet]
   );
 
+  const goBack = useCallback(() => {
+    if (step <= 1) return;
+    const prevQ = questionSet[step - 2];
+    if (prevQ) {
+      const newAnswers = { ...answers };
+      delete newAnswers[prevQ.id];
+      // If going back to audience question, also clear downstream answers
+      if (prevQ.id === "audience") {
+        setAnswers({ });
+      } else {
+        setAnswers(newAnswers);
+      }
+    }
+    setStep(step - 1);
+  }, [step, answers, questionSet]);
+
   const reset = () => {
-    setStep(0);
+    setStep(1);
     setAnswers({});
     setResult(null);
+    setSecondaryResult(null);
     setAiExplanation("");
+    setPhase("questions");
+    setLeadEmail("");
+    setLeadName("");
+    setLeadSubmitted(false);
+    setLeadSubmitting(false);
     setShowQuestion(true);
   };
 
   const toggleOpen = () => {
+    if (!isOpen) reset();
     setIsOpen((prev) => !prev);
     setShowTooltip(false);
+  };
+
+  const submitLead = async () => {
+    if (!leadEmail || !result) return;
+    setLeadSubmitting(true);
+    try {
+      const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+      if (url && key) {
+        await fetch(`${url}/rest/v1/leads`, {
+          method: "POST",
+          headers: {
+            apikey: key,
+            Authorization: `Bearer ${key}`,
+            "Content-Type": "application/json",
+            Prefer: "return=minimal",
+          },
+          body: JSON.stringify({
+            email: leadEmail,
+            name: leadName,
+            recommended_program: result.slug,
+            answers,
+          }),
+        });
+      }
+    } catch {}
+    setLeadSubmitted(true);
+    setLeadSubmitting(false);
   };
 
   const motionProps = useMemo(() => {
@@ -286,7 +500,7 @@ export default function NeuralOrbLauncher() {
                 fontSize: "13px",
                 fontWeight: 500,
                 boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
-                border: `1px solid rgba(0,184,169,0.12)`,
+                border: "1px solid rgba(0,184,169,0.12)",
                 whiteSpace: "nowrap",
                 pointerEvents: "none",
                 letterSpacing: "0.01em",
@@ -297,7 +511,7 @@ export default function NeuralOrbLauncher() {
           )}
         </AnimatePresence>
 
-        {/* Orb button — 56px with compass icon */}
+        {/* Orb button */}
         <motion.button
           onClick={toggleOpen}
           aria-label={isOpen ? "Close program advisor" : "Open program advisor"}
@@ -322,19 +536,12 @@ export default function NeuralOrbLauncher() {
                 <stop offset="55%" stopColor={colors.brand.teal} />
                 <stop offset="100%" stopColor={colors.brand.navyDeep} />
               </radialGradient>
-              <filter id="ngGlow">
-                <feGaussianBlur stdDeviation="3" />
-              </filter>
+              <filter id="ngGlow"><feGaussianBlur stdDeviation="3" /></filter>
             </defs>
-            {/* Outer ring */}
             <circle cx="28" cy="28" r="26" fill="none" stroke="rgba(0,184,169,0.1)" strokeWidth="0.75" className="ng-ring-outer" />
-            {/* Glow */}
             <circle cx="28" cy="28" r="15" fill={colors.brand.teal} opacity="0.2" filter="url(#ngGlow)" />
-            {/* Core */}
             <circle cx="28" cy="28" r="15" fill="url(#ngOrbFill)" />
-            {/* Highlight */}
             <circle cx="24" cy="24" r="4" fill="rgba(255,255,255,0.08)" />
-            {/* Compass needle — rotated diamond */}
             <g transform="translate(28,28)">
               <path d="M0-5L3 0 0 5-3 0z" fill="rgba(255,255,255,0.9)" />
               <path d="M0 0L3 0 0 5-3 0z" fill="rgba(255,255,255,0.5)" />
@@ -353,12 +560,7 @@ export default function NeuralOrbLauncher() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
-            style={{
-              position: "fixed",
-              inset: 0,
-              backgroundColor: "rgba(0,0,0,0.6)",
-              zIndex: 9997,
-            }}
+            style={{ position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.6)", zIndex: 9997 }}
           />
         )}
       </AnimatePresence>
@@ -377,7 +579,7 @@ export default function NeuralOrbLauncher() {
               bottom: "96px",
               right: "24px",
               width: "392px",
-              maxHeight: "min(560px, calc(100vh - 130px))",
+              maxHeight: "min(620px, calc(100vh - 130px))",
               background: "rgba(10,15,46,0.92)",
               backdropFilter: "blur(28px)",
               WebkitBackdropFilter: "blur(28px)",
@@ -391,52 +593,59 @@ export default function NeuralOrbLauncher() {
             }}
           >
             {/* Animated border glow */}
-            <div className="ng-border-glow" style={{
-              position: "absolute",
-              inset: "-1px",
-              borderRadius: "21px",
-              padding: "1px",
-              pointerEvents: "none",
-              zIndex: 0,
-            }} />
-
-            {/* Dot pattern overlay */}
-            <div className="ng-dots" style={{
-              position: "absolute",
-              inset: 0,
-              borderRadius: "20px",
-              pointerEvents: "none",
-              zIndex: 0,
-              opacity: 0.35,
-            }} />
+            <div className="ng-border-glow" style={{ position: "absolute", inset: "-1px", borderRadius: "21px", padding: "1px", pointerEvents: "none", zIndex: 0 }} />
+            {/* Dot pattern */}
+            <div className="ng-dots" style={{ position: "absolute", inset: 0, borderRadius: "20px", pointerEvents: "none", zIndex: 0, opacity: 0.35 }} />
 
             {/* Header */}
-            <div
-              style={{
-                padding: "16px 20px",
-                borderBottom: "1px solid rgba(0,184,169,0.06)",
+            <div style={{
+              padding: "16px 20px",
+              borderBottom: "1px solid rgba(0,184,169,0.06)",
+              display: "flex",
+              alignItems: "center",
+              gap: "12px",
+              flexShrink: 0,
+              position: "relative",
+              zIndex: 1,
+            }}>
+              {/* Back button (visible when step > 1 and still in questions phase) */}
+              {phase === "questions" && step > 1 && (
+                <button
+                  onClick={goBack}
+                  aria-label="Go back"
+                  className="ng-close-btn"
+                  style={{
+                    width: "28px",
+                    height: "28px",
+                    borderRadius: "8px",
+                    border: "1px solid rgba(0,184,169,0.08)",
+                    backgroundColor: "rgba(0,184,169,0.03)",
+                    color: colors.text.bodyDark,
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "14px",
+                    lineHeight: 1,
+                    flexShrink: 0,
+                    transition: "all 0.2s ease",
+                  }}
+                >
+                  &#8592;
+                </button>
+              )}
+              {/* Compass icon */}
+              <div style={{
+                width: "32px",
+                height: "32px",
+                borderRadius: "10px",
+                background: "linear-gradient(135deg, rgba(0,184,169,0.12), rgba(0,184,169,0.03))",
+                border: "1px solid rgba(0,184,169,0.15)",
                 display: "flex",
                 alignItems: "center",
-                gap: "12px",
+                justifyContent: "center",
                 flexShrink: 0,
-                position: "relative",
-                zIndex: 1,
-              }}
-            >
-              {/* Compass icon in header */}
-              <div
-                style={{
-                  width: "32px",
-                  height: "32px",
-                  borderRadius: "10px",
-                  background: `linear-gradient(135deg, rgba(0,184,169,0.12), rgba(0,184,169,0.03))`,
-                  border: "1px solid rgba(0,184,169,0.15)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexShrink: 0,
-                }}
-              >
+              }}>
                 <svg width="16" height="16" viewBox="0 0 16 16">
                   <circle cx="8" cy="8" r="6.5" fill="none" stroke="rgba(0,184,169,0.4)" strokeWidth="1" />
                   <circle cx="8" cy="8" r="1" fill={colors.brand.teal} />
@@ -445,12 +654,8 @@ export default function NeuralOrbLauncher() {
                 </svg>
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ color: "#e6f1ff", fontSize: "14px", fontWeight: 600, letterSpacing: "-0.01em" }}>
-                  Find Your Path
-                </div>
-                <div style={{ color: colors.text.bodyDark, fontSize: "10px", fontWeight: 500, letterSpacing: "0.04em", opacity: 0.7 }}>
-                  AI-POWERED ADVISOR
-                </div>
+                <div style={{ color: "#e6f1ff", fontSize: "14px", fontWeight: 600, letterSpacing: "-0.01em" }}>Find Your Path</div>
+                <div style={{ color: colors.text.bodyDark, fontSize: "10px", fontWeight: 500, letterSpacing: "0.04em", opacity: 0.7 }}>AI-POWERED ADVISOR</div>
               </div>
               <button
                 onClick={toggleOpen}
@@ -478,90 +683,16 @@ export default function NeuralOrbLauncher() {
             </div>
 
             {/* Body */}
-            <div
-              style={{
-                padding: "24px 22px",
-                overflowY: "auto",
-                flex: 1,
-                position: "relative",
-                zIndex: 1,
-              }}
-            >
+            <div style={{ padding: "24px 22px", overflowY: "auto", flex: 1, position: "relative", zIndex: 1 }}>
               <AnimatePresence mode="wait">
-                {/* Step 0: Intro */}
-                {step === 0 && (
-                  <motion.div key="intro" {...motionProps} style={{ textAlign: "center" }}>
-                    {/* Animated compass graphic */}
-                    <motion.div
-                      animate={prefersReducedMotion ? {} : { rotate: [0, 15, -10, 5, 0] }}
-                      transition={{ duration: 4, repeat: Infinity, repeatDelay: 3, ease: "easeInOut" }}
-                      style={{
-                        width: "64px",
-                        height: "64px",
-                        margin: "0 auto 28px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <svg width="56" height="56" viewBox="0 0 56 56">
-                        <circle cx="28" cy="28" r="24" fill="none" stroke="rgba(0,184,169,0.12)" strokeWidth="1" />
-                        <circle cx="28" cy="28" r="18" fill="none" stroke="rgba(0,184,169,0.08)" strokeWidth="0.75" />
-                        {/* Cardinal ticks */}
-                        {[0, 90, 180, 270].map((a) => {
-                          const rad = (a * Math.PI) / 180;
-                          const x1 = 28 + Math.cos(rad) * 22;
-                          const y1 = 28 + Math.sin(rad) * 22;
-                          const x2 = 28 + Math.cos(rad) * 24;
-                          const y2 = 28 + Math.sin(rad) * 24;
-                          return <line key={a} x1={x1} y1={y1} x2={x2} y2={y2} stroke="rgba(0,184,169,0.3)" strokeWidth="1.5" />;
-                        })}
-                        {/* Needle */}
-                        <path d="M28 10L31 28 28 32 25 28z" fill={colors.brand.teal} opacity="0.7" />
-                        <path d="M28 32L31 28 28 46 25 28z" fill={colors.brand.teal} opacity="0.25" />
-                        <circle cx="28" cy="28" r="3" fill="rgba(10,15,46,0.9)" stroke={colors.brand.teal} strokeWidth="1" />
-                      </svg>
-                    </motion.div>
-
-                    <h3 style={{ color: "#e6f1ff", fontSize: "19px", fontWeight: 700, marginBottom: "12px", letterSpacing: "-0.02em" }}>
-                      Not sure where to start?
-                    </h3>
-                    <p style={{ color: colors.text.bodyDark, fontSize: "13px", lineHeight: 1.7, marginBottom: "0", maxWidth: "280px", margin: "0 auto 30px" }}>
-                      Answer 3 quick questions and our AI will match you to the perfect CODED program.
-                    </p>
-
-                    <motion.button
-                      onClick={() => setStep(1)}
-                      whileHover={prefersReducedMotion ? {} : { scale: 1.02, boxShadow: "0 8px 32px rgba(0,184,169,0.3)" }}
-                      whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
-                      style={{
-                        background: `linear-gradient(135deg, ${colors.brand.teal}, ${colors.brand.tealDark})`,
-                        color: "white",
-                        padding: "14px 28px",
-                        borderRadius: "14px",
-                        fontWeight: 600,
-                        fontSize: "14px",
-                        border: "none",
-                        cursor: "pointer",
-                        boxShadow: "0 4px 24px rgba(0,184,169,0.2)",
-                        width: "100%",
-                        letterSpacing: "0.02em",
-                      }}
-                    >
-                      Let&apos;s go &#8594;
-                    </motion.button>
-                  </motion.div>
-                )}
-
-                {/* Steps 1-3: Questions */}
-                {step >= 1 && step <= questions.length && (
-                  <motion.div key={`q-${step}`} {...motionProps}>
+                {/* Questions */}
+                {phase === "questions" && currentQ && (
+                  <motion.div key={`q-${step}-${currentQ.id}`} {...motionProps}>
                     {!showQuestion ? (
                       <TypingDots />
                     ) : (
                       <>
-                        <ProgressSegments current={step} total={questions.length} />
-
+                        <ProgressSegments current={step} total={totalQuestions} />
                         <p style={{
                           color: colors.text.bodyDark,
                           fontSize: "10px",
@@ -572,9 +703,8 @@ export default function NeuralOrbLauncher() {
                           textAlign: "center",
                           opacity: 0.7,
                         }}>
-                          Question {step} of {questions.length}
+                          Question {step} of {totalQuestions}
                         </p>
-
                         <h3 style={{
                           fontSize: "17px",
                           fontWeight: 700,
@@ -584,17 +714,16 @@ export default function NeuralOrbLauncher() {
                           lineHeight: 1.4,
                           letterSpacing: "-0.01em",
                         }}>
-                          {questions[step - 1].question}
+                          {currentQ.question}
                         </h3>
-
                         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                          {questions[step - 1].options.map((option, i) => (
+                          {currentQ.options.map((option, i) => (
                             <motion.button
                               key={option.value}
                               initial={prefersReducedMotion ? false : { opacity: 0, x: 12 }}
                               animate={{ opacity: 1, x: 0 }}
                               transition={{ delay: i * 0.06, ...spring.snappy }}
-                              onClick={() => handleAnswer(questions[step - 1].id, option.value)}
+                              onClick={() => handleAnswer(currentQ.id, option.value)}
                               className="ng-option-btn"
                               whileHover={prefersReducedMotion ? {} : { x: 4, boxShadow: "0 4px 16px rgba(0,184,169,0.08)" }}
                               whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
@@ -628,8 +757,8 @@ export default function NeuralOrbLauncher() {
                   </motion.div>
                 )}
 
-                {/* Step 4: Loading */}
-                {step === 4 && (
+                {/* Loading */}
+                {phase === "loading" && (
                   <motion.div key="loading" {...motionProps} style={{ textAlign: "center", padding: "48px 0" }}>
                     <motion.div
                       animate={prefersReducedMotion ? {} : { rotate: 360 }}
@@ -647,8 +776,8 @@ export default function NeuralOrbLauncher() {
                   </motion.div>
                 )}
 
-                {/* Step 5: Result */}
-                {step === 5 && result && (
+                {/* Result */}
+                {phase === "result" && result && (
                   <motion.div key="result" {...motionProps}>
                     <p style={{
                       color: colors.brand.teal,
@@ -662,6 +791,7 @@ export default function NeuralOrbLauncher() {
                       Your Perfect Match
                     </p>
 
+                    {/* Primary recommendation */}
                     <motion.div
                       initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -674,12 +804,7 @@ export default function NeuralOrbLauncher() {
                         marginBottom: "12px",
                       }}
                     >
-                      {/* Gradient header stripe */}
-                      <div style={{
-                        height: "3px",
-                        background: `linear-gradient(90deg, transparent, ${result.color}, ${result.color}88, transparent)`,
-                      }} />
-
+                      <div style={{ height: "3px", background: `linear-gradient(90deg, transparent, ${result.accent_color}, ${result.accent_color}88, transparent)` }} />
                       <div style={{ padding: "20px" }}>
                         <div className="ng-badge" style={{
                           display: "inline-block",
@@ -699,14 +824,14 @@ export default function NeuralOrbLauncher() {
                         </div>
 
                         <h3 style={{ fontSize: "20px", fontWeight: 700, color: "#e6f1ff", marginBottom: "8px", letterSpacing: "-0.02em" }}>
-                          {result.title}
+                          {result.name}
                         </h3>
 
                         <p style={{ color: colors.text.bodyDark, fontSize: "12px", lineHeight: 1.65, marginBottom: "18px", fontStyle: "italic" }}>
                           &ldquo;{aiExplanation}&rdquo;
                         </p>
 
-                        {/* Stats grid */}
+                        {/* Stats */}
                         <div style={{
                           display: "grid",
                           gridTemplateColumns: "1fr 1fr",
@@ -720,8 +845,8 @@ export default function NeuralOrbLauncher() {
                           {[
                             { label: "Duration", value: result.duration },
                             { label: "Price", value: result.price },
-                            { label: "Next cohort", value: result.nextCohort },
-                            { label: "Seats left", value: `${result.seats} remaining` },
+                            { label: "Next cohort", value: result.next_cohort },
+                            ...(result.seats_left > 0 ? [{ label: "Seats left", value: `${result.seats_left} remaining` }] : []),
                           ].map((item) => (
                             <div key={item.label}>
                               <div style={{ color: colors.text.bodyDark, fontSize: "9px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "4px", opacity: 0.7 }}>
@@ -737,17 +862,17 @@ export default function NeuralOrbLauncher() {
                         <div style={{ display: "flex", gap: "8px" }}>
                           <motion.a
                             href={`/programs/${result.slug}`}
-                            whileHover={prefersReducedMotion ? {} : { scale: 1.02, boxShadow: `0 8px 28px ${result.color}40` }}
+                            whileHover={prefersReducedMotion ? {} : { scale: 1.02, boxShadow: `0 8px 28px ${result.accent_color}40` }}
                             whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
                             style={{
-                              background: `linear-gradient(135deg, ${result.color}, ${result.color}cc)`,
+                              background: `linear-gradient(135deg, ${result.accent_color}, ${result.accent_color}cc)`,
                               color: "white",
                               padding: "12px 20px",
                               borderRadius: "12px",
                               fontWeight: 600,
                               fontSize: "13px",
                               textDecoration: "none",
-                              boxShadow: `0 4px 20px ${result.color}30`,
+                              boxShadow: `0 4px 20px ${result.accent_color}30`,
                               flex: 1,
                               textAlign: "center",
                               letterSpacing: "0.02em",
@@ -775,6 +900,162 @@ export default function NeuralOrbLauncher() {
                           </motion.button>
                         </div>
                       </div>
+                    </motion.div>
+
+                    {/* Secondary suggestion */}
+                    {secondaryResult && (
+                      <motion.div
+                        initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.35, ...spring.gentle }}
+                        style={{
+                          backgroundColor: "rgba(17,29,74,0.25)",
+                          border: "1px solid rgba(30,45,107,0.3)",
+                          borderRadius: "14px",
+                          padding: "16px",
+                          marginBottom: "12px",
+                        }}
+                      >
+                        <p style={{ color: colors.text.bodyDark, fontSize: "9px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "10px", opacity: 0.6 }}>
+                          You might also like
+                        </p>
+                        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                          <div style={{
+                            width: "8px",
+                            height: "36px",
+                            borderRadius: "4px",
+                            background: secondaryResult.accent_color,
+                            flexShrink: 0,
+                          }} />
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ color: "#e6f1ff", fontSize: "14px", fontWeight: 600, marginBottom: "2px" }}>
+                              {secondaryResult.name}
+                            </div>
+                            <div style={{ color: colors.text.bodyDark, fontSize: "11px", lineHeight: 1.5, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                              {secondaryResult.description}
+                            </div>
+                          </div>
+                          <a
+                            href={`/programs/${secondaryResult.slug}`}
+                            style={{
+                              color: colors.brand.teal,
+                              fontSize: "12px",
+                              fontWeight: 600,
+                              textDecoration: "none",
+                              whiteSpace: "nowrap",
+                              flexShrink: 0,
+                            }}
+                          >
+                            View &#8594;
+                          </a>
+                        </div>
+                      </motion.div>
+                    )}
+
+                    {/* Lead capture */}
+                    <motion.div
+                      initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5, ...spring.gentle }}
+                      style={{
+                        backgroundColor: "rgba(0,184,169,0.04)",
+                        border: "1px solid rgba(0,184,169,0.08)",
+                        borderRadius: "14px",
+                        padding: "16px",
+                        marginBottom: "12px",
+                      }}
+                    >
+                      {!leadSubmitted ? (
+                        <>
+                          <p style={{ color: colors.text.bodySubtle, fontSize: "12px", fontWeight: 500, marginBottom: "12px", lineHeight: 1.5 }}>
+                            Want us to send you the program details?
+                          </p>
+                          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                            <input
+                              type="text"
+                              placeholder="Name (optional)"
+                              value={leadName}
+                              onChange={(e) => setLeadName(e.target.value)}
+                              style={{
+                                backgroundColor: "rgba(17,29,74,0.5)",
+                                border: "1px solid rgba(30,45,107,0.4)",
+                                borderRadius: "10px",
+                                padding: "10px 14px",
+                                color: "#e6f1ff",
+                                fontSize: "13px",
+                                outline: "none",
+                                transition: "border-color 0.2s ease",
+                              }}
+                            />
+                            <input
+                              type="email"
+                              placeholder="Email address"
+                              value={leadEmail}
+                              onChange={(e) => setLeadEmail(e.target.value)}
+                              required
+                              style={{
+                                backgroundColor: "rgba(17,29,74,0.5)",
+                                border: "1px solid rgba(30,45,107,0.4)",
+                                borderRadius: "10px",
+                                padding: "10px 14px",
+                                color: "#e6f1ff",
+                                fontSize: "13px",
+                                outline: "none",
+                                transition: "border-color 0.2s ease",
+                              }}
+                            />
+                            <button
+                              onClick={submitLead}
+                              disabled={!leadEmail || leadSubmitting}
+                              style={{
+                                background: leadEmail ? `linear-gradient(135deg, ${colors.brand.teal}, ${colors.brand.tealDark})` : "rgba(30,45,107,0.4)",
+                                color: leadEmail ? "white" : colors.text.bodyDark,
+                                padding: "10px 16px",
+                                borderRadius: "10px",
+                                fontWeight: 600,
+                                fontSize: "13px",
+                                border: "none",
+                                cursor: leadEmail ? "pointer" : "not-allowed",
+                                transition: "all 0.2s ease",
+                                opacity: leadSubmitting ? 0.7 : 1,
+                              }}
+                            >
+                              {leadSubmitting ? "Sending..." : "Send me details"}
+                            </button>
+                          </div>
+                        </>
+                      ) : (
+                        <div style={{ textAlign: "center", padding: "4px 0" }}>
+                          <p style={{ color: colors.brand.teal, fontSize: "13px", fontWeight: 600, marginBottom: "4px" }}>
+                            Thanks! The CODED team will reach out.
+                          </p>
+                          <p style={{ color: colors.text.bodyDark, fontSize: "11px" }}>
+                            Check your inbox soon.
+                          </p>
+                        </div>
+                      )}
+                    </motion.div>
+
+                    {/* Contact option */}
+                    <motion.div
+                      initial={prefersReducedMotion ? false : { opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.6 }}
+                      style={{ textAlign: "center", paddingTop: "4px" }}
+                    >
+                      <a
+                        href="mailto:hello@joincoded.com"
+                        style={{
+                          color: colors.text.bodyDark,
+                          fontSize: "12px",
+                          textDecoration: "none",
+                          transition: "color 0.2s ease",
+                        }}
+                        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = colors.brand.teal; }}
+                        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = colors.text.bodyDark; }}
+                      >
+                        Or talk to the CODED team &#8594;
+                      </a>
                     </motion.div>
                   </motion.div>
                 )}
